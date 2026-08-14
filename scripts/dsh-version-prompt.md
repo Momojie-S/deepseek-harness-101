@@ -21,9 +21,9 @@
      - 对每个被 bump 的内部包再 `npm pack <pkg>@<旧> <pkg>@<新>` 对比其产物
      - `config/`：agent presets 变化（模型预设、技能注入，直接影响日常使用）
      - `lib/*.js`：打包产物，文件名带哈希，按内容找显著增删段（粗粒度即可，源码仓会补细节）
-2. **源码仓提交历史**
-   - `git -C D:\code\workspace\deepseek-harness log -S'"version": "<版本号>"' -- package.json` 定位版本 bump commit，两版本 bump 之间即变更区间
-   - 找不到 bump commit（CI 发版未推送时会发生）就按 npm 发布时间圈定：`git log --since=<旧版发布时间> --until=<新版发布时间>`，并在报告"方法与局限"里写明
+2. **源码仓提交历史**（辅助定位，别指望它做主证据）
+   - 注意：本机源码仓是 **shallow clone（depth=1）**，`git log` 只有一个 commit——历史类方法（`log -S`、区间圈定）天然不可用，直接以 tarball 对比为主证据、源码仓当"当前状态快照"（grep 接面存在性/签名）用
+   - 若仓库已转为完整 clone：`git -C D:\code\workspace\deepseek-harness log -S'"version": "<版本号>"' -- package.json` 定位版本 bump commit，两版本 bump 之间即变更区间；找不到 bump commit（CI 发版未推送时会发生）就按 npm 发布时间圈定：`git log --since=<旧版发布时间> --until=<新版发布时间>`，并在报告"方法与局限"里写明
    - 重点看这段区间里 `docs/` 的变化（用户文档最诚实）与 `packages/` 涉及哪些包
 3. **插件影响分析（本任务的重点，篇幅应最大）**
    - 逐个读 `plugins/*/src/index.ts`（现有 dsh-workspace-mcp / dsh-workspace-env / dsh-subagent-model，以目录实际内容为准），提取它触碰的全部 DSH 接面：
