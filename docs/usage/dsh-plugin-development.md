@@ -1,6 +1,8 @@
 # DSH 插件开发指南
 
-> 基于实际开发两个插件（workspace-mcp、workspace-env）+ 源码调研 + 实测踩坑总结。方法论浓缩版见项目根 `AGENTS.md` / `AGENTS.local.md`，本文是完整展开。
+> 基于实际开发插件（workspace-mcp、workspace-env、subagent-model）+ 源码调研 + 实测踩坑总结。方法论浓缩版见项目根 `AGENTS.md` / `AGENTS.local.md`，本文是完整展开。
+>
+> **本文是活文档**：指导当前开发，实践或 DSH 行为变化时同步更新（版本快照式的源码调研另存 `docs/research/`）。
 >
 > DSH 源码与官方文档：[deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，本地 checkout `D:\code\workspace\deepseek-harness\`。
 
@@ -247,6 +249,17 @@ dsh: patch: name mismatch for "pwsh-sandbox" (expected "@deepseek-ai/dsh-pwsh-sa
 | MCP server | 每个服务器一个 `dsh-mcp-client` 插件实例（配 patch，不是写代码） |
 | 创作新 agent 预设 | 创造模式 + `editing-cordis-compositions` skill（预设 = 描述一个 agent 的 cordis.yml） |
 
+### 工具使用说明的写法（description 与引导段）
+
+模型只能看到两条通道，`ToolDefinition` 其余字段（`execute`/`output`/`timeoutMs` 等）永不进模型请求：
+
+1. **工具级 `description`**（`defineTool`）：写"何时用 + 输出语义"，触发条件比功能罗列更有用
+2. **参数级 `description`**：写取值语义与默认行为，默认必须写明（"Defaults to true"、"Omit to inherit"）——它是模型填对参数的唯一依据
+3. **行为引导**：倾向性/排他规则（"优先 X 别用 Y"）放 `ctx.systemPrompt.section({ name: 'tool:<name>', order: 100-199, text })`，工具不可用时 text 返回空串（空段自动丢弃）
+4. **行为随配置变化**：把差异在注册时拼进 description（参考 `plugins/dsh-subagent-model` 的 `providerWording`）
+
+机制细节（三字段白名单、Code Mode SDK 投影、MCP 透传）见调研笔记 [tool-description-channels.md](../research/tool-description-channels.md)。
+
 ### 案例：注入任意 shell 环境变量（workspace-env 的选择）
 
 官方通道 `ctx.shellEnv` 只收 `DSH_*` 前缀；`ShellExecRequest.env` 只有直接调 `ctx.shell.run()` 的调用方能传（如 hooks bridges），tool-pwsh 不给插件留口子。要注入 workspace `.env` 这类任意变量，只能包装 `shell.spawnSpec`：
@@ -290,3 +303,4 @@ export function apply(ctx: any) {
 
 - `plugins/dsh-workspace-mcp` — 事件监听（`agent/created` 主 + `pre-step` 兜底）+ agent-scoped 工具注册 + chokidar 配置热更新
 - `plugins/dsh-workspace-env` — `inject: ['shell']` + spawnSpec 包装 + `ctx.effect` 可逆清理；含 22 个单元测试
+- `plugins/dsh-subagent-model` — 工具使用说明写法参照（`providerWording` 按配置拼措辞、参数默认行为写明、引导段 order 频段与空段语义）

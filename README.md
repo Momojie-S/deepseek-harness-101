@@ -12,8 +12,23 @@
 
 ## 使用心得笔记
 
+**开发指南**（`docs/usage/`，活文档——指导当前开发，随实践保持最新）：
+
 - [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、踩坑速查）
 - [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
+
+**调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
+
+- [docs/research/tool-description-channels.md](./docs/research/tool-description-channels.md) — 工具使用说明如何暴露给模型：两条通道与三字段白名单（rc.6 源码调研）
+- [docs/research/agent-instructions.md](./docs/research/agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
+- [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
+
+## 版本观察（自动）
+
+计划任务 `\dsh-version-check`（每天 01:00）对比 npm 官方 `@deepseek-ai/dsh` 最新版与本机运行版：无新版则零成本退出；有新版则自动跑一次 headless 调查任务，总结新旧版本差异并逐个评估本仓插件是否需要改动/废弃，中文报告存 [docs/version/](./docs/version/)（文件名 = 新版本号）。
+
+- 触发脚本：`scripts/check-dsh-version.ps1`；调查指令模板（改它即改未来调查行为）：`scripts/dsh-version-prompt.md`
+- 手动演练：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-dsh-version.ps1 -CurrentVersion <旧版> -TargetVersion <新版>`
 
 ## 使用
 

@@ -6,9 +6,8 @@ lib/
 dist/
 *.tsbuildinfo
 
-# 个人配置（agent 个人指令，不提交）
+# 个人配置（agent 个人指令，不提交；AGENTS.md 是项目级指令，要提交）
 .agents/
-AGENTS.md
 AGENTS.local.md
 
 # 系统
@@ -16,8 +15,9 @@ AGENTS.local.md
 Thumbs.db
 .debug/
 
-# 临时调试残留
-.dsh/_watchtest.yml
+# dsh 运行时产物（version-check 状态、watchtest 等；项目配置 mcp.servers.yml 豁免，已跟踪文件不受影响）
+.dsh/*
+!.dsh/mcp.servers.yml
 
 # dsh workspace-env（本地凭据，绝不入库）
 .env
