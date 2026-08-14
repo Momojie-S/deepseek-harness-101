@@ -7,9 +7,11 @@
 | 插件 | 路径 | 作用 |
 |------|------|------|
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
+| @momojie-s/dsh-workspace-env | `plugins/dsh-workspace-env` | pwsh 命令自动注入 workspace `.env` 环境变量，实现 workspace 级环境变量隔离 |
 
 ## 使用心得笔记
 
+- [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、踩坑速查）
 - [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
 
 ## 使用

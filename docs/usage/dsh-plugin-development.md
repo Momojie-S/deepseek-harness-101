@@ -288,5 +288,5 @@ export function apply(ctx: any) {
 
 本仓库两个插件即完整示例：
 
-- `plugins/dsh-workspace-mcp` — 事件监听（`agent/pre-step`）+ agent-scoped 工具注册 + chokidar 配置热更新
-- `plugins/dsh-workspace-env` — `inject: ['shell']` + spawnSpec 包装 + `ctx.effect` 可逆清理；含 16 个单元测试
+- `plugins/dsh-workspace-mcp` — 事件监听（`agent/created` 主 + `pre-step` 兜底）+ agent-scoped 工具注册 + chokidar 配置热更新
+- `plugins/dsh-workspace-env` — `inject: ['shell']` + spawnSpec 包装 + `ctx.effect` 可逆清理；含 22 个单元测试
