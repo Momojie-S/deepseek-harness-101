@@ -6,6 +6,18 @@ lib/
 dist/
 *.tsbuildinfo
 
+# 个人配置（agent 个人指令，不提交）
+.agents/
+AGENTS.md
+AGENTS.local.md
+
 # 系统
 .DS_Store
 Thumbs.db
+.debug/
+
+# 临时调试残留
+.dsh/_watchtest.yml
+
+# dsh workspace-env（本地凭据，绝不入库）
+.env
