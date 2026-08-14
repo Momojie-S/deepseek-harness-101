@@ -8,6 +8,10 @@
 |------|------|------|
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
 
+## 使用心得笔记
+
+- [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
+
 ## 使用
 
 ```shell
