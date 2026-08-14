@@ -1,0 +1,11 @@
+# 依赖
+node_modules/
+
+# 编译产物
+lib/
+dist/
+*.tsbuildinfo
+
+# 系统
+.DS_Store
+Thumbs.db
