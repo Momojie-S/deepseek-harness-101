@@ -1,0 +1,3 @@
+[submodule "plugins/dsh-workspace-mcp"]
+	path = plugins/dsh-workspace-mcp
+	url = https://github.com/Momojie-S/dsh-workspace-mcp.git
