@@ -1,0 +1,6 @@
+# 测试用 MCP 配置：server-everything 是 MCP 官方测试 server（stdio，自包含）
+servers:
+  test-everything:
+    transport: stdio
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-everything@latest"]
