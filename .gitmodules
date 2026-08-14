@@ -4,3 +4,6 @@
 [submodule "plugins/dsh-workspace-env"]
 	path = plugins/dsh-workspace-env
 	url = https://github.com/Momojie-S/dsh-workspace-env.git
+[submodule "plugins/dsh-subagent-model"]
+	path = plugins/dsh-subagent-model
+	url = https://github.com/Momojie-S/dsh-subagent-model.git
