@@ -69,6 +69,16 @@ docs/design/decisions/         # ADR，一个决策一个文件：NNNN-<slug>.md
 - 插件用 TypeScript function 形式：`export const name` + `export function apply(ctx, config)`
 - 迭代流程：思路在创造模式（cordis 预设）动态验证，改静态代码后**重启 DSH** 验证（Node ESM 缓存限制，详见开发指南"HMR 与缓存"节）
 
+## MCP 配置对标产品
+
+workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**（"业界怎么做"以它们为准，不凭空设计）。主对标三家（调研笔记见 README 文章索引）：
+
+- **Claude Code**（Anthropic）— 三作用域（local/project/user）+ 根级 `.mcp.json` 事实标准源头 + 项目文件批准门禁 + tool search
+- **Codex CLI**（OpenAI）— `.codex/config.toml` 项目级配置（与 `.dsh/` 点目录同型）+ 禁用开关/工具黑白名单/双超时一套规整字段
+- **OpenCode**（SST/Anomaly）— 分层合并配置（远程/全局/项目）+ `{env:}`/`{file:}` 变量替换 + MCP 按 agent 粒度启用
+
+扩展对标（按需查）：Gemini CLI（`.gemini/settings.json` + 环境脱敏）、Cursor / VS Code / Windsurf（编辑器阵营，`mcpServers` 变体）、Kiro / Amazon Q（企业 MCP Registry 治理）、Zed（`context_servers`，格式碎片化反例）。
+
 ## 部署形态
 
 双轨：

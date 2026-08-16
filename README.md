@@ -15,6 +15,7 @@
 **开发指南**（`docs/usage/`，活文档——指导当前开发，随实践保持最新）：
 
 - [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、踩坑速查）
+- [docs/usage/agent-presets.md](./docs/usage/agent-presets.md) — Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
 - [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
 
 **调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
@@ -22,6 +23,13 @@
 - [docs/research/tool-description-channels.md](./docs/research/tool-description-channels.md) — 工具使用说明如何暴露给模型：两条通道与三字段白名单（rc.6 源码调研）
 - [docs/research/agent-instructions.md](./docs/research/agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
 - [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
+- [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
+- [docs/research/memory/agent-memory-landscape.md](./docs/research/memory/agent-memory-landscape.md) — Agent 记忆系统全景调研总览：15 家产品五维决策、跨产品共识与分歧、DSH 记忆层最小路径（2026-08 快照）
+- [docs/research/memory/hermes-memory.md](./docs/research/memory/hermes-memory.md) — Hermes Agent 记忆机制：热/冷/技能三层 + 9 个 memory provider 生态（2026-08 快照）
+- [docs/research/memory/openclaw-memory.md](./docs/research/memory/openclaw-memory.md) — OpenClaw 记忆架构：五层 tier、provenance 溯源、dreaming 离线晋升、双 lane 召回（2026-08 快照）
+- [docs/research/memory/coding-agents-memory.md](./docs/research/memory/coding-agents-memory.md) — Claude Code / Codex / OpenCode 跨会话记忆：指令层级 + auto memory/Memories、文件式 vs 数据库式取舍（2026-08 快照）
+- [docs/research/memory/memory-middleware.md](./docs/research/memory/memory-middleware.md) — 通用记忆中间件头部三家：Mem0 / Zep(Graphiti) / Letta(MemGPT)（2026-08 快照）
+- [docs/research/memory/memory-middleware-emerging.md](./docs/research/memory/memory-middleware-emerging.md) — 差异化记忆产品六家：LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS（2026-08 快照）
 
 ## 版本观察（自动）
 
