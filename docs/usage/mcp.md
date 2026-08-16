@@ -69,3 +69,5 @@ dsh web --dump-config 2>&1 | Select-String 'mcp-|not a group'
 - 连续失败 10 次放弃，卸载工具等 reload
 - 重连期间旧工具保持注册但调用失败
 - 连接存活超 30s 重置预算（偶尔崩的能无限恢复，crash-loop 的被掐掉）
+
+项目级 `workspace-mcp` 插件（≥0.2.0）移植了同一套 supervisor，行为一致；重连参数可在插件 patch config 的 `reconnect.*` 或 `.dsh/mcp.servers.yml` 各 server 条目逐项覆盖（见插件 README「配置」）。
