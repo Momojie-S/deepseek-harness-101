@@ -71,4 +71,4 @@ dsh web --dump-config 2>&1 | Select-String 'mcp-|not a group'
 - 连接存活超 30s 重置预算（偶尔崩的能无限恢复，crash-loop 的被掐掉）
 - **已知盲区（官方 mcp-client）**：streamable-http server 重启/会话驱逐后的 `Session not found`（HTTP 404）不触发 `onclose`，官方 supervisor 唯一断线信号就是 onclose → 不重连，工具持续失败；只能"强制重连"（删 patch 条目存盘再贴回）或重启 DSH。stdio 不受影响（进程退出必触发 onclose）
 
-项目级 `workspace-mcp` 插件（≥0.2.0）移植了同一套 supervisor，行为一致；重连参数可在插件 patch config 的 `reconnect.*` 或 `.dsh/mcp.servers.yml` 各 server 条目逐项覆盖（见插件 README「配置」）。**≥0.2.1 补上了上述盲区**：工具调用/重同步识别 `Session not found` 类错误即自动判定断线换代重连（一次调用失败后自愈，偶发 5xx 不误判），机制见插件 ADR-0005。
+项目级 `workspace-mcp` 插件（≥0.2.0）移植了同一套 supervisor，行为一致；重连参数可在插件 patch config 的 `reconnect.*` 或 `.dsh/mcp.servers.yml` 各 server 条目逐项覆盖（见插件 README「配置」）。**≥0.2.1 补上了上述盲区**：工具调用/重同步识别 `Session not found` 类错误即自动判定断线换代重连（一次调用失败后自愈，偶发 5xx 不误判），机制见插件 ADR-0005。**≥0.3.0 官方对齐补齐**：stdio 子进程继承 scrubbed 父环境（yml `env` 变为覆盖层，与全局 MCP 一致）、`structuredContent` 输出契约、非法工具列表/注册冲突整代拒绝回滚，机制见插件 ADR-0006。
