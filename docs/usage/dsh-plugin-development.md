@@ -224,6 +224,35 @@ junction 指进 DSH 安装的模块树后，传递依赖从那里自动解析，
 
 **先在创造模式验证，能大幅减少"改代码 → 重启"的循环次数**——思路错了在动态阶段就发现，静态版一次写对。
 
+## 构建原子性与插件防炸启动
+
+**bundle 层插件的任何失败都会阻断整个 dsh 启动**（import 失败 / 模块形状无效 / apply 运行时抛错，结局相同：进程 exit 1）。tsc 直接 emit 到 `lib/` 的传统写法有"半成品窗口"——重建与重启并发时 loader 可能 import 到截断的 `lib/index.js`，空 ESM namespace 没有 `apply`，报 `invalid plugin, expect function or object with an "apply" method`（2026-08-17 实测炸过一次启动）。
+
+三层防线（机制与四组实验见 [docs/research/plugin-fault-isolation.md](../research/plugin-fault-isolation.md)）：
+
+1. **构建原子化**：产物先进 `lib-tmp/` staging，import 门禁（`typeof apply === 'function'`）通过后 rename 交换进 `lib/`——窗口从秒级缩到两次 rename 之间，构建失败时 `lib/` 保持上一完好版本。模板：`plugins/dsh-workspace-files/scripts/build.mjs`。
+2. **apply 内部防御**：不影响主体运行的注册（路由、可选服务）包 try/catch 降级为 warn 日志；只有插件核心承诺无法兑现才让它抛。全仓插件 build 脚本建议逐步迁移到原子构建。
+3. **应急开关**：插件坏了起不来时，在插件自带 `cordis.patch.yml` 的 entry 行加 `disabled: true`（模块根本不 import，实测最干净的灭火手段）；修好后再去掉。注意 `dsh.profile.bundles` 只接受包名字符串，不支持元组。
+
+## 开发验证流程（四道闸门）
+
+三类炸启动故障里，前两类不需要启动就能拦住——验证成本从"整机重启"逐级降到"零成本"：
+
+| 闸门 | 拦截的故障类别 | 代价 | 命令（插件目录内） |
+|------|---------------|------|--------------------|
+| ① 单元测试 | 纯函数逻辑错 | 秒级，无 Cordis 环境 | `npm test` |
+| ② 原子构建 + import 门禁 | 模块形状坏（空/截断）、依赖缺失 | 构建失败即拦，`lib/` 保持上一完好版本 | `npm run build` |
+| ③ 备用端口试启动 | apply 运行时抛错、服务交互问题 | ~15 秒，**不碰正在运行的主实例** | `dsh --profile web --port 3999`（后台起，看是否退出） |
+| ④ 冒烟 | 路由/功能实际行为 | 一条 curl / 一次页面点击 | `curl -H "Host: 127.0.0.1:3999" http://127.0.0.1:3999/plugins/<id>/...` |
+
+操作要点：
+
+- **③ 是关键闸门**：启动测试不需要杀主实例——`--port` 换端口起测试进程，主实例照常服务。测试进程 exit 1 = 有炸启动问题；起来后再 curl 插件路由做④。测完 `Stop-Process` 杀测试进程（先用 `Get-NetTCPConnection -LocalPort <p>` 找 PID，别按启动时间猜杀 node）。
+- **改静态代码的标准流程**：① → ② → ③ → ④ 全过 → 才重启主 DSH。开发期迭代①②即可，③④在"准备重启/发布"前过一遍。
+- **新增插件**：`dsh plugin --profile web add` 之后**必须**过③——bundle 层是启动时快照，add 完不试启动就重启，等于拿主实例赌插件没问题。
+- 生态位备注：社区有 dsh-boot-guard 类启动救援插件（定位疑似故障插件、临时跳过），但依赖它的救援不如自己的③闸门不生产事故。
+
+
 ## patch 系统的限制
 
 **不能通过 id override 改 `name`**。patch 按 `id` 匹配已有行，但若指定了与原行不同的 `name`，整个 patch 被拒绝：

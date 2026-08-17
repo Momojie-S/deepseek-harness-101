@@ -9,12 +9,13 @@
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
 | @momojie-s/dsh-workspace-env | `plugins/dsh-workspace-env` | pwsh 命令自动注入 workspace `.env` 环境变量，实现 workspace 级环境变量隔离 |
 | @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens），fork 自官方 tool-subagent |
+| @momojie-s/dsh-workspace-files | `plugins/dsh-workspace-files` | Web UI 工作区文件面板：右侧可调宽文件树 + 递归搜索 + Markdown 渲染/语法高亮，路由双重围栏（loopback + 会话 cwd） |
 
 ## 使用心得笔记
 
 **开发指南**（`docs/usage/`，活文档——指导当前开发，随实践保持最新）：
 
-- [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、踩坑速查）
+- [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、防炸启动四道闸门、踩坑速查）
 - [docs/usage/agent-presets.md](./docs/usage/agent-presets.md) — Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
 - [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
 
@@ -23,6 +24,7 @@
 - [docs/research/tool-description-channels.md](./docs/research/tool-description-channels.md) — 工具使用说明如何暴露给模型：两条通道与三字段白名单（rc.6 源码调研）
 - [docs/research/agent-instructions.md](./docs/research/agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
 - [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
+- [docs/research/plugin-fault-isolation.md](./docs/research/plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
 - [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/memory/agent-memory-landscape.md](./docs/research/memory/agent-memory-landscape.md) — Agent 记忆系统全景调研总览：15 家产品五维决策、跨产品共识与分歧、DSH 记忆层最小路径（2026-08 快照）
 - [docs/research/memory/hermes-memory.md](./docs/research/memory/hermes-memory.md) — Hermes Agent 记忆机制：热/冷/技能三层 + 9 个 memory provider 生态（2026-08 快照）
