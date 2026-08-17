@@ -86,7 +86,7 @@ workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**
 
 - **开发机**：`dsh plugin --profile web add <插件目录>`——profile 得到 `link:` 依赖 + bundle 层挂载，改代码 → 原子构建 → 重启验证。**本地安装的标准方式**，与生产同构（bundle 声明/patch/client 声明的问题发布前就能暴露）。
 - **其他电脑**：`dsh plugin --profile web add github:Momojie-S/<plugin>`（首次按 pnpm 提示在 profile 的 `pnpm-workspace.yaml` 加 `allowBuilds` 授权构建），或 `pnpm pack` tarball 免授权。
-- **例外**：patch 手写 `file:///` 绝对路径行**只适用于纯 host 半部插件的临时实验**（行级 HMR 改 config 方便）；带浏览器半部的插件**必须** bundle 方式——clientModules 按"条目名=包名"从 profile 解析包，`file:///` 名字解析不到，client bundle 永远 404（rc.6 源码 `packages/client/modules`）。现存：subagent-model 一例（历史遗留）。
+- **例外**：patch 手写 `file:///` 绝对路径行**只适用于纯 host 半部插件的临时实验**（行级 HMR 改 config 方便）；带浏览器半部的插件**必须** bundle 方式——clientModules 按"条目名=包名"从 profile 解析包，`file:///` 名字解析不到，client bundle 永远 404（rc.6 源码 `packages/client/modules`）。2026-08-17 起 profile 内零 `file:///` 行，全部走 bundle。
 
 每个插件 `package.json` 带 `dsh.bundle` 声明 + 包内 `cordis.patch.yml`（行 `name` 用包名，模块解析走 node_modules），`prepare` 脚本自包含构建（git 安装后产出 `lib/`）。
 
