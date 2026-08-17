@@ -1,7 +1,7 @@
 # 插件故障为什么能阻断 DSH 启动——加载链路与故障隔离实验
 
 > 版本基准：`@deepseek-ai/dsh@0.1.0-rc.6`（部署包，本机 `D:\code\env\node-v24.13.1-win-x64\node_modules\@deepseek-ai\dsh`），源码对照仓 `D:\code\workspace\deepseek-harness`（同代 rc.6 源码）。
-> 起因：2026-08-17 用户重启 dsh 报 `failed to apply loader entry ... (@momojie-s/dsh-workspace-files): invalid plugin, expect function or object with an "apply" method, received object`，整个 web 服务起不来。本文记录根因、四组对照实验与插件侧的防炸结论。
+> 起因：2026-08-17 用户重启 dsh 后 Web UI 显示 "Failed to load plugins / failed to apply loader entry ... (@momojie-s/dsh-workspace-files): invalid plugin ... received object"。**后记（同日修正）**：首查曾把两次故障归因为"非原子构建窗口"与"并发会话改 profile 的中间态"，均不成立——真实根因见第 7 节：client bundle 缺 `exports.apply`，浏览器侧 entry 失败（文案与 host 侧一字不差，极具迷惑性）。本文的链路分析与四组实验仍有效，实验注入的是 host 侧故障，结论对两侧同样成立。
 
 ## 1. 启动加载链路（谁在什么时机校验插件）
 
@@ -100,6 +100,20 @@ try { route('/x', ...) } catch (e) { ctx.logger.warn('workspace-files: route /x 
 - `cordis-plugin-loader` 的 `EntryOptions.disabled` 与 `disabledOf`（`!!js` 求值）是机制来源；`bundlers` 元组不被 `resolveBundleDir` 支持是实测结论。
 - boot 顶层 rethrow 链：`app-boot/lib/index.js:1186`（rc.6 部署包行号）。
 
-## 6. 归档条件
+## 6. 真实事故复盘（2026-08-17 当日终版）
+
+事故现象有两层，首查各误判一层：
+
+1. **进程层**（第一次重启，进程 exit 1）：当时归因"非原子构建窗口"——无法复现第二次，存疑但不排除。
+2. **Web UI 层**（第二次，进程活着、stderr 健康、host 路由 200，但浏览器整页 "Failed to load plugins"）：曾误判为"并发会话改 profile 的中间态"。**真实根因**：client bundle 的 factory body 定义了 `apply`/`inject` 但从未赋值给 `module.exports`，浏览器侧 cordis loader 收到空对象 → entry 失败 → boot gate fail-loud 渲染错误页。
+
+关键迷惑点（值得记两条）：
+
+- **同文案跨平面**：浏览器侧 client cordis 与 host 侧是同一套 loader 代码，"invalid plugin … received object" 两边一字不差——看文案会误判成 host 侧故障，而 host 半部实际完全正常。
+- **curl 盲区**：host 路由 200 只证明 host entry 健康；浏览器侧 entry 死了 curl 照样全绿。**带 client 半部的插件，④ 冒烟必须真实打开浏览器**。
+
+修复与防线：client bundle 补 `exports.apply/inject`；build 门禁 3a 按浏览器 loader 的消费方式（捕获 `__ModuleLoader__.load`、以 react 替身调 factory）校验 staged bundle 的返回插件形状，此类缺陷从此在构建期报错。
+
+## 7. 归档条件
 
 DSH 若引入"启动期单插件失败降级"（boot 容忍 rejected entry 并标记 fiber FAILED 继续启动），本文第 4 节防线 2/3 的必要性下降，届时归档并重写。
