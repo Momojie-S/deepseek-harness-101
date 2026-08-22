@@ -1,6 +1,6 @@
 # Agent Preset：是什么、有什么用、怎么用
 
-> 版本基准：`@deepseek-ai/dsh` **0.1.0-rc.6**（部署于 `D:\code\env\node-v24.13.1-win-x64\node_modules\@deepseek-ai\dsh`）。机制部分对照官方源码仓 `D:\code\workspace\deepseek-harness`（`packages/preset/agent-presets`、`packages/client/ui-agent-preset`、`packages/bundle/web-app/cordis.patch.yml`）。DSH 迭代快，升级后以官方包 README 为准更新本文。
+> 版本基准：`@deepseek-ai/dsh` **0.1.1-rc.2**（机制结论最初基于 rc.6 源码调研；rc.7 起 `enableRunInBackground` → `backgroundMode`（重套实践见文末），rc.8/0.1.1 preset 仅注释变化，`ptc-early-compact` 已验证至 0.1.1-rc.2 正常加载）。机制部分对照官方源码仓 `D:\code\workspace\deepseek-harness`（`packages/preset/agent-presets`、`packages/client/ui-agent-preset`、`packages/bundle/web-app/cordis.patch.yml`）。DSH 迭代快，升级后以官方包 README 为准更新本文。
 
 **一句话**：preset 是一个目录，里面放一份 `agent.cordis.yml` 插件组装文件——它决定一个会话里的 agent 有哪些工具、什么人设、哪些行为参数。DSH 的底层是 Cordis 架构，每个能力都是 `cordis.yml` 里的一行插件；preset 就是"这一个会话贡献给注册表的那份组合文件"，建会话时挂载、随会话归属，进程内同一 preset 只挂载一份、所有用它的会话共享。
 
