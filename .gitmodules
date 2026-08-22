@@ -7,3 +7,6 @@
 [submodule "plugins/dsh-subagent-model"]
 	path = plugins/dsh-subagent-model
 	url = https://github.com/Momojie-S/dsh-subagent-model.git
+[submodule "plugins/dsh-schedspawn"]
+	path = plugins/dsh-schedspawn
+	url = https://github.com/Momojie-S/dsh-schedspawn.git
