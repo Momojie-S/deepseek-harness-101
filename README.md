@@ -27,6 +27,7 @@
 - [docs/research/agent-instructions.md](./docs/research/agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
 - [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
 - [docs/research/web-file-open-trust.md](./docs/research/web-file-open-trust.md) — Web UI 点击文件名打开本机文件的信任链路：fence 特权方法集钉死 loopback、SSH 隧道不可区分、nativeOpen:false 文档实现偏差（rc.7）
+- [docs/research/settings-loopback-fence.md](./docs/research/settings-loopback-fence.md) — 远程域名打开模型配置页报「加载提供方目录失败」：settings 镜像与服务端 API 双层 loopback 围栏，设计而非故障（0.1.1-rc.2）
 - [docs/research/plugin-fault-isolation.md](./docs/research/plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
 - [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/context-compaction.md](./docs/research/context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
