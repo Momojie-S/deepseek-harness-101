@@ -69,6 +69,7 @@ docs/design/decisions/         # ADR，一个决策一个文件：NNNN-<slug>.md
 - 插件用 TypeScript function 形式：`export const name` + `export function apply(ctx, config)`
 - 迭代流程：思路在创造模式（cordis 预设）动态验证，改静态代码后**重启 DSH** 验证（Node ESM 缓存限制，详见开发指南"HMR 与缓存"节）
 - **单插件失败会阻断整个 DSH 启动**（bundle 层无宽容路径）——改静态代码/新增插件后，重启前必须过开发指南「开发验证流程」的四道闸门（单测 → 原子构建 → 备用端口试启动 → 冒烟）；**闸门④冒烟必须真实打开浏览器过一遍 UI**——client 半部失败的报错文案与 host 侧一字不差而 curl 全绿，只测路由会漏判（2026-08-17 实测，浏览器验证缺位导致同一事故两次）；插件坏了起不来时用 bundle patch 行 `disabled: true` 灭火
+- **动态插件（创造模式）异常没有插件级隔离：任何未捕获抛错击穿整个 DSH 进程**——异步路径（事件回调/微任务）必须全链路 try/catch + `.catch()` 兜底，失败时退回原生行为；沙箱不暴露 `ctx.logger` 等宿主内置（Guard 只放行 `ctx.on` / `ctx.tools.register` / `ctx.provide` / timer / inject 声明的服务），可用符号先查 `Builtin.listBuiltins` 再用；注册成功 ≠ 安全——延迟路径的非法访问要到首次真实触发才炸（2026-08-25 实证：一行 `ctx.logger.info` 在运行一小时后杀死全进程）。细则见开发指南「用创造模式验证思路」节，复盘见 `docs/research/subagent-settlement-delivery.md`
 
 ## MCP 配置对标产品
 

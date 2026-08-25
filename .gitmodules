@@ -10,3 +10,6 @@
 [submodule "plugins/dsh-schedspawn"]
 	path = plugins/dsh-schedspawn
 	url = https://github.com/Momojie-S/dsh-schedspawn.git
+[submodule "plugins/dsh-subagent-idle-delivery"]
+	path = plugins/dsh-subagent-idle-delivery
+	url = https://github.com/Momojie-S/dsh-subagent-idle-delivery.git

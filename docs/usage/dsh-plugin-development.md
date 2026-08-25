@@ -97,6 +97,12 @@ DSH 内置四个预设，新会话时选择：
 
 **信任边界**：动态插件不是安全沙箱——代码直接跑在真实运行时，官方文档明说"等同于 shell 权限"。只在信任的会话里用。
 
+### 动态插件三条铁律（2026-08-25 进程击穿事故提炼，复盘见 `docs/research/subagent-settlement-delivery.md`）
+
+1. **异常围栏是生死线，不是风格**。动态插件没有插件级隔离：任何未捕获的抛错（尤其事件回调、`Promise.resolve().then()` 微任务等延迟路径里的）外逸后按 fatal load failure 处理，**整个 DSH 进程死亡**。所有事件监听器包 try/catch，所有 Promise 链挂 `.catch()` 兜底；兜底逻辑 = 把已改变的运行时状态退回原生行为（如把取出的消息放回收件箱），而不是记日志继续跑。
+2. **沙箱 ctx 的可用面以 Guard 为准，先查后用**。宿主刻意 withhold 了 `ctx.logger` 等 cordis 侧内置；放行的只有 `ctx.on` / `ctx.tools.register` / `ctx.provide` / `ctx.get`、注入 timer 后的 timer helpers、以及 `inject` 显式声明的服务。写代码前用 `Builtin.listBuiltins` 查证，别按静态插件的 ctx 心智推定——静态插件里合法的 `ctx.logger` 在动态沙箱一访问就 throw（正是那次事故的直接根因）。
+3. **注册成功 ≠ 安全，验证必须覆盖真实触发路径**。`apply()` 里不碰的非法访问不会在 `cordis_run` 时暴露——事故插件注册后正常跑了一小时，第一条子 agent 通知真正进入"扣留"分支才炸。动态插件验证 = 让核心逻辑**真实发生至少一次**（触发对应事件、走完异步路径），不是"工具返回 running"就算完。
+
 ## 依赖注入
 
 ```ts
