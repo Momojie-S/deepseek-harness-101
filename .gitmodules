@@ -13,3 +13,6 @@
 [submodule "plugins/dsh-subagent-idle-delivery"]
 	path = plugins/dsh-subagent-idle-delivery
 	url = https://github.com/Momojie-S/dsh-subagent-idle-delivery.git
+[submodule "plugins/dsh-subagent-cleanup"]
+	path = plugins/dsh-subagent-cleanup
+	url = https://github.com/Momojie-S/dsh-subagent-cleanup.git
