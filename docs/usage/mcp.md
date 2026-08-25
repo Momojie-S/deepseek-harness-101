@@ -72,3 +72,22 @@ dsh web --dump-config 2>&1 | Select-String 'mcp-|not a group'
 - **已知盲区（官方 mcp-client）**：streamable-http server 重启/会话驱逐后的 `Session not found`（HTTP 404）不触发 `onclose`，官方 supervisor 唯一断线信号就是 onclose → 不重连，工具持续失败；只能"强制重连"（删 patch 条目存盘再贴回）或重启 DSH。stdio 不受影响（进程退出必触发 onclose）
 
 项目级 `workspace-mcp` 插件（≥0.2.0）移植了同一套 supervisor，行为一致；重连参数可在插件 patch config 的 `reconnect.*` 或 `.dsh/mcp.servers.yml` 各 server 条目逐项覆盖（见插件 README「配置」）。**≥0.2.1 补上了上述盲区**：工具调用/重同步识别 `Session not found` 类错误即自动判定断线换代重连（一次调用失败后自愈，偶发 5xx 不误判），机制见插件 ADR-0005。**≥0.3.0 官方对齐补齐**：stdio 子进程继承 scrubbed 父环境（yml `env` 变为覆盖层，与全局 MCP 一致）、`structuredContent` 输出契约、非法工具列表/注册冲突整代拒绝回滚，机制见插件 ADR-0006。
+
+## 项目级 MCP 补充（workspace-mcp）
+
+**注册时机与竞速**：注册在 `agent/created` 即启动（web 开会话与首条消息之间的秒级窗口内完成握手）→ 首个模型请求就含这些工具。例外：create 后立刻发消息的竞速场景（headless 单步任务）第一步可能没有，第二步必有。
+
+**排查日志**：挂载 config 开 `verbose: true` 后，连接/注册日志含 `[ws-mcp] server "xxx": 注册 N 个工具`（stdio 场景在 stderr）。
+
+**headless/tui profile 临时挂载**：这两个 profile 没挂 workspace-mcp，需要时用 `--patch` 临时挂 `file:///` 行指向其 lib（`D:/code/workspace/deepseek-harness-101/plugins/dsh-workspace-mcp/lib/index.js`；纯 host 半部插件可临时这样挂，带浏览器半部的插件不行——见合集 AGENTS.md「部署形态」）。
+
+**与全局 MCP 同名冲突（实测结论）**：两边工具名都是 `mcp__<serverName>__<tool>`，冲突语义来自 DSH 工具注册表——agent 作用域遮蔽全局（per-tool，按名字逐个遮蔽）：
+
+| 场景 | 行为 |
+|---|---|
+| serverName 不同 | 共存，两组工具模型都可见（正常用法） |
+| 同 serverName（工具名撞车） | 项目级赢：模型看到并调用的都是项目版（web 从第 1 步起；竞速输了的场景第 1 步可能暂用全局版，第 2 步起项目版）。全局版对没配此 server 的其它 workspace 不受影响 |
+| 全局 patch 里两条同 serverName | 后者整代注册回滚，日志报 `already registered`，该 server 一个工具都没有 |
+| 同一个 yml 里重复 server 键 | YAML 后键覆盖前键 |
+
+同名遮蔽是刻意覆盖的正规姿势（如把全局 server 指向本地 dev 实例调试）；无意撞名就改 serverName。若两边工具列表不完全一致，只有重名的那部分被遮蔽，其余各自可见。
