@@ -8,7 +8,7 @@
 |------|------|------|
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
 | @momojie-s/dsh-workspace-env | `plugins/dsh-workspace-env` | pwsh 命令自动注入 workspace `.env` 环境变量，实现 workspace 级环境变量隔离 |
-| @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens）与上下文继承（省略参数默认 fork 当前对话最新完成轮次），fork 自官方 tool-subagent |
+| @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens）与上下文继承（默认干净上下文，`fresh_context: false` 按调用时刻最新完成轮次 fork 当前对话），fork 自官方 tool-subagent |
 | @momojie-s/dsh-workspace-files | `plugins/dsh-workspace-files` | Web UI 工作区文件面板：可调宽文件树 + 递归搜索 + Markdown 渲染/语法高亮，路由双重围栏（loopback + 会话 cwd）；装入 right-dock 时作为「文件」标签页 |
 | @momojie-s/dsh-right-dock | `plugins/dsh-right-dock` | Web UI 右侧栏平台：推挤式（非遮挡）多标签 dock，插件通过 `rightdock.tab` 坐席挂标签页；窄屏自动转浮层抽屉 |
 | @momojie-s/dsh-schedspawn | `plugins/dsh-schedspawn` | `schedspawn` 工具：定时直启独立子agent（可按任务指定模型路由，add 时校验路由），完成后自动回报本会话；忙时顺延、失败熔断、孤儿接管 |
