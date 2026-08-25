@@ -8,7 +8,7 @@
 |------|------|------|
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
 | @momojie-s/dsh-workspace-env | `plugins/dsh-workspace-env` | pwsh 命令自动注入 workspace `.env` 环境变量，实现 workspace 级环境变量隔离 |
-| @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens），fork 自官方 tool-subagent |
+| @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens）与上下文继承（省略参数默认 fork 当前对话最新完成轮次），fork 自官方 tool-subagent |
 | @momojie-s/dsh-workspace-files | `plugins/dsh-workspace-files` | Web UI 工作区文件面板：可调宽文件树 + 递归搜索 + Markdown 渲染/语法高亮，路由双重围栏（loopback + 会话 cwd）；装入 right-dock 时作为「文件」标签页 |
 | @momojie-s/dsh-right-dock | `plugins/dsh-right-dock` | Web UI 右侧栏平台：推挤式（非遮挡）多标签 dock，插件通过 `rightdock.tab` 坐席挂标签页；窄屏自动转浮层抽屉 |
 | @momojie-s/dsh-schedspawn | `plugins/dsh-schedspawn` | `schedspawn` 工具：定时直启独立子agent（可按任务指定模型路由，add 时校验路由），完成后自动回报本会话；忙时顺延、失败熔断、孤儿接管 |
@@ -28,6 +28,8 @@
 - [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
 - [docs/research/web-file-open-trust.md](./docs/research/web-file-open-trust.md) — Web UI 点击文件名打开本机文件的信任链路：fence 特权方法集钉死 loopback、SSH 隧道不可区分、nativeOpen:false 文档实现偏差（rc.7）
 - [docs/research/settings-loopback-fence.md](./docs/research/settings-loopback-fence.md) — 远程域名打开模型配置页报「加载提供方目录失败」：settings 镜像与服务端 API 双层 loopback 围栏，设计而非故障（0.1.1-rc.2）
+- [docs/research/subagent-settlement-delivery.md](./docs/research/subagent-settlement-delivery.md) — 子 agent 完成通知的投递机制：忙时 steer/闲时 followup/teardown 时 inject 三路分发、必达优先的设计理由、无"等空闲"开关（0.1.1-rc.2）
+- [docs/research/subagent-runtime-overhead.md](./docs/research/subagent-runtime-overhead.md) — 并发子 agent 拖慢整机的机制链：in-process 事件循环竞争、每 chunk 全局分发、mux 无过滤推流、每 step 全量 assemble、远端配额竞争；含定位判据与缓解（0.1.1-rc.2）
 - [docs/research/plugin-fault-isolation.md](./docs/research/plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
 - [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/context-compaction.md](./docs/research/context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
