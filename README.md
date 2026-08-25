@@ -31,6 +31,7 @@
 - [docs/research/settings-loopback-fence.md](./docs/research/settings-loopback-fence.md) — 远程域名打开模型配置页报「加载提供方目录失败」：settings 镜像与服务端 API 双层 loopback 围栏，设计而非故障（0.1.1-rc.2）
 - [docs/research/subagent-settlement-delivery.md](./docs/research/subagent-settlement-delivery.md) — 子 agent 完成通知的投递机制：忙时 steer/闲时 followup/teardown 时 inject 三路分发、必达优先的设计理由、无"等空闲"开关（0.1.1-rc.2）
 - [docs/research/subagent-runtime-overhead.md](./docs/research/subagent-runtime-overhead.md) — 并发子 agent 拖慢整机的机制链：in-process 事件循环竞争、每 chunk 全局分发、mux 无过滤推流、每 step 全量 assemble、远端配额竞争；含定位判据与缓解（0.1.1-rc.2）
+- [docs/research/session-list-scaling-archive.md](./docs/research/session-list-scaling-archive.md) — session.list 随会话堆积规模化(664 条≈1s/880KB)、API 归档为何治不了、冷会话物理归档的安全边界与实操效果（0.1.1-rc.2）
 - [docs/research/plugin-fault-isolation.md](./docs/research/plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
 - [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/context-compaction.md](./docs/research/context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
