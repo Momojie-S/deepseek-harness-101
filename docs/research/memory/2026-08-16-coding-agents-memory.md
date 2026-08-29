@@ -2,7 +2,7 @@
 
 > **版本基准**：三家线上官方文档与 changelog 快照，2026-08 抓取核对——Claude Code 官方 memory 文档（code.claude.com/docs/en/memory，对应 CLI v2.1.233 时期）+ 官方 CHANGELOG（v2.1.105–v2.1.233 逐条核对）；Codex 官方 developers.openai.com/codex 文档（Memories / Chronicle / AGENTS.md / CLI Features / Slash commands / Config Reference）；OpenCode 官方 opencode.ai v1 Rules（2026-08-14 更新）+ V2 Instructions 文档。非官方佐证（逆向分析、第三方报道、社区插件）均在正文显式标注。三家迭代极快（Claude auto memory 2026-02 才默认化、Codex Memories/Chronicle 2026 年内上线、OpenCode V2 指令架构处于并行期），本文结论仅对上述时点负责。
 >
-> **关联文档**：本仓 [agent-instructions.md](../agent-instructions.md) 调研的是 **DSH 自身**的 AGENTS.md 发现/去重/预算/注入机制（`@deepseek-ai/dsh-agent-instructions` 插件，基准 DSH 0.1.0-rc.6）；本文调研**三家外部对标产品**的记忆机制，二者互补——本文第五节对比表可与该文档"完整机制"节对照阅读，评估 DSH 指令注入与业界形态的差距。全量记忆产品横向对比见 [agent-memory-landscape.md](./agent-memory-landscape.md)。
+> **关联文档**：本仓 [2026-08-14-agent-instructions.md](../2026-08-14-agent-instructions.md) 调研的是 **DSH 自身**的 AGENTS.md 发现/去重/预算/注入机制（`@deepseek-ai/dsh-agent-instructions` 插件，基准 DSH 0.1.0-rc.6）；本文调研**三家外部对标产品**的记忆机制，二者互补——本文第五节对比表可与该文档"完整机制"节对照阅读，评估 DSH 指令注入与业界形态的差距。全量记忆产品横向对比见 [2026-08-16-agent-memory-landscape.md](./2026-08-16-agent-memory-landscape.md)。
 
 ---
 

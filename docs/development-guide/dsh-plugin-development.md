@@ -97,7 +97,7 @@ DSH 内置四个预设，新会话时选择：
 
 **信任边界**：动态插件不是安全沙箱——代码直接跑在真实运行时，官方文档明说"等同于 shell 权限"。只在信任的会话里用。
 
-### 动态插件三条铁律（2026-08-25 进程击穿事故提炼，复盘见 `docs/research/subagent-settlement-delivery.md`）
+### 动态插件三条铁律（2026-08-25 进程击穿事故提炼，复盘见 `docs/research/2026-08-25-subagent-settlement-delivery.md`）
 
 1. **异常围栏是生死线，不是风格**。动态插件没有插件级隔离：任何未捕获的抛错（尤其事件回调、`Promise.resolve().then()` 微任务等延迟路径里的）外逸后按 fatal load failure 处理，**整个 DSH 进程死亡**。所有事件监听器包 try/catch，所有 Promise 链挂 `.catch()` 兜底；兜底逻辑 = 把已改变的运行时状态退回原生行为（如把取出的消息放回收件箱），而不是记日志继续跑。
 2. **沙箱 ctx 的可用面以 Guard 为准，先查后用**。宿主刻意 withhold 了 `ctx.logger` 等 cordis 侧内置；放行的只有 `ctx.on` / `ctx.tools.register` / `ctx.provide` / `ctx.get`、注入 timer 后的 timer helpers、以及 `inject` 显式声明的服务。写代码前用 `Builtin.listBuiltins` 查证，别按静态插件的 ctx 心智推定——静态插件里合法的 `ctx.logger` 在动态沙箱一访问就 throw（正是那次事故的直接根因）。
@@ -234,7 +234,7 @@ junction 指进 DSH 安装的模块树后，传递依赖从那里自动解析，
 
 **bundle 层插件的任何失败都会阻断整个 dsh 启动**（import 失败 / 模块形状无效 / apply 运行时抛错，结局相同：进程 exit 1）。tsc 直接 emit 到 `lib/` 的传统写法有"半成品窗口"——重建与重启并发时 loader 可能 import 到截断的 `lib/index.js`，空 ESM namespace 没有 `apply`，报 `invalid plugin, expect function or object with an "apply" method`（2026-08-17 实测炸过一次启动）。
 
-三层防线（机制与四组实验见 [docs/research/plugin-fault-isolation.md](../research/plugin-fault-isolation.md)）：
+三层防线（机制与四组实验见 [docs/research/2026-08-17-plugin-fault-isolation.md](../research/2026-08-17-plugin-fault-isolation.md)）：
 
 1. **构建原子化**：产物先进 `lib-tmp/` staging，import 门禁（`typeof apply === 'function'`）通过后 rename 交换进 `lib/`——窗口从秒级缩到两次 rename 之间，构建失败时 `lib/` 保持上一完好版本。模板：`plugins/dsh-workspace-files/scripts/build.mjs`。
 2. **apply 内部防御**：不影响主体运行的注册（路由、可选服务）包 try/catch 降级为 warn 日志；只有插件核心承诺无法兑现才让它抛。全仓插件 build 脚本建议逐步迁移到原子构建。
@@ -296,7 +296,7 @@ dsh: patch: name mismatch for "pwsh-sandbox" (expected "@deepseek-ai/dsh-pwsh-sa
 3. **行为引导**：倾向性/排他规则（"优先 X 别用 Y"）放 `ctx.systemPrompt.section({ name: 'tool:<name>', order: 100-199, text })`，工具不可用时 text 返回空串（空段自动丢弃）
 4. **行为随配置变化**：把差异在注册时拼进 description（参考 `plugins/dsh-subagent-model` 的 `providerWording`）
 
-机制细节（三字段白名单、Code Mode SDK 投影、MCP 透传）见调研笔记 [tool-description-channels.md](../research/tool-description-channels.md)。
+机制细节（三字段白名单、Code Mode SDK 投影、MCP 透传）见调研笔记 [tool-description-channels.md](../research/2026-08-14-tool-description-channels.md)。
 
 ### 案例：注入任意 shell 环境变量（workspace-env 的选择）
 

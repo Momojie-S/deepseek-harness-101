@@ -55,7 +55,7 @@ jobs 体系（one-shot 后台）的 `onJobDone`（`packages/jobs/tool-jobs/src/i
 ## 附注
 
 - maintenance 窗口内到达的通知 latch 到 maintenance 结束才开回合，不打断 maintenance 任务。
-- 被报告打断体感的真实来源更可能是并发子 agent 的进程内资源竞争，见 [subagent-runtime-overhead.md](./subagent-runtime-overhead.md)。
+- 被报告打断体感的真实来源更可能是并发子 agent 的进程内资源竞争，见 [2026-08-25-subagent-runtime-overhead.md](./2026-08-25-subagent-runtime-overhead.md)。
 
 ## 插入时点的精确时间线（pwsh 场景，2026-08-25 追加验证）
 

@@ -67,4 +67,4 @@ session 事件全量驻留内存（`session.events` 数组，磁盘 0.5GB 对应
 
 ## 相关
 
-- 结算通知"忙时立刻插入"是刻意设计且不打断在飞执行，见 [subagent-settlement-delivery.md](./subagent-settlement-delivery.md)——被"插入消息"打断的体感，一部分实际来自本文的资源竞争。
+- 结算通知"忙时立刻插入"是刻意设计且不打断在飞执行，见 [2026-08-25-subagent-settlement-delivery.md](./2026-08-25-subagent-settlement-delivery.md)——被"插入消息"打断的体感，一部分实际来自本文的资源竞争。

@@ -2,7 +2,7 @@
 
 > **版本基准**：2026-08 调研时点的官方文档现状 + 论文机制分开标注。**注意：Mem0 与 Zep 的开源/商业形态在 2025-2026 年都发生过重大策略变化，网上大量资料（含论文描述）已与当前产品不符**，本文已逐项区分。
 >
-> 关联阅读：[memory-middleware-emerging.md](./memory-middleware-emerging.md)（二线差异化产品）、[agent-memory-landscape.md](./agent-memory-landscape.md)（总览）。
+> 关联阅读：[2026-08-16-memory-middleware-emerging.md](./2026-08-16-memory-middleware-emerging.md)（二线差异化产品）、[2026-08-16-agent-memory-landscape.md](./2026-08-16-agent-memory-landscape.md)（总览）。
 
 ---
 

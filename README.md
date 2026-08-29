@@ -27,24 +27,24 @@
 
 **调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
 
-- [docs/research/tool-description-channels.md](./docs/research/tool-description-channels.md) — 工具使用说明如何暴露给模型：两条通道与三字段白名单（rc.6 源码调研）
-- [docs/research/agent-instructions.md](./docs/research/agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
-- [docs/research/skill-catalog-shadowing.md](./docs/research/skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
-- [docs/research/web-file-open-trust.md](./docs/research/web-file-open-trust.md) — Web UI 点击文件名打开本机文件的信任链路：fence 特权方法集钉死 loopback、SSH 隧道不可区分、nativeOpen:false 文档实现偏差（rc.7）
-- [docs/research/settings-loopback-fence.md](./docs/research/settings-loopback-fence.md) — 远程域名打开模型配置页报「加载提供方目录失败」：settings 镜像与服务端 API 双层 loopback 围栏，设计而非故障（0.1.1-rc.2）
-- [docs/research/subagent-settlement-delivery.md](./docs/research/subagent-settlement-delivery.md) — 子 agent 完成通知的投递机制：忙时 steer/闲时 followup/teardown 时 inject 三路分发、必达优先的设计理由、无"等空闲"开关（0.1.1-rc.2）
-- [docs/research/subagent-runtime-overhead.md](./docs/research/subagent-runtime-overhead.md) — 并发子 agent 拖慢整机的机制链：in-process 事件循环竞争、每 chunk 全局分发、mux 无过滤推流、每 step 全量 assemble、远端配额竞争；含定位判据与缓解（0.1.1-rc.2）
-- [docs/research/session-list-scaling-archive.md](./docs/research/session-list-scaling-archive.md) — session.list 随会话堆积规模化(664 条≈1s/880KB)、API 归档为何治不了、冷会话物理归档的安全边界与实操效果（0.1.1-rc.2）
-- [docs/research/plugin-fault-isolation.md](./docs/research/plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
-- [docs/research/mcp-config-across-agents.md](./docs/research/mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
-- [docs/research/context-compaction.md](./docs/research/context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
-- [docs/research/long-session-attention-degradation.md](./docs/research/long-session-attention-degradation.md) — goal 长会话注意力退化调研：Context Rot / lost-in-the-middle / 轨迹锁定 / 目标代理四机制、六种业界解法对照（Ralph / compaction / 外部评审等）、定时评审子agent 设计的六条落地建议（2026-08 快照）
-- [docs/research/memory/agent-memory-landscape.md](./docs/research/memory/agent-memory-landscape.md) — Agent 记忆系统全景调研总览：15 家产品五维决策、跨产品共识与分歧、DSH 记忆层最小路径（2026-08 快照）
-- [docs/research/memory/hermes-memory.md](./docs/research/memory/hermes-memory.md) — Hermes Agent 记忆机制：热/冷/技能三层 + 9 个 memory provider 生态（2026-08 快照）
-- [docs/research/memory/openclaw-memory.md](./docs/research/memory/openclaw-memory.md) — OpenClaw 记忆架构：五层 tier、provenance 溯源、dreaming 离线晋升、双 lane 召回（2026-08 快照）
-- [docs/research/memory/coding-agents-memory.md](./docs/research/memory/coding-agents-memory.md) — Claude Code / Codex / OpenCode 跨会话记忆：指令层级 + auto memory/Memories、文件式 vs 数据库式取舍（2026-08 快照）
-- [docs/research/memory/memory-middleware.md](./docs/research/memory/memory-middleware.md) — 通用记忆中间件头部三家：Mem0 / Zep(Graphiti) / Letta(MemGPT)（2026-08 快照）
-- [docs/research/memory/memory-middleware-emerging.md](./docs/research/memory/memory-middleware-emerging.md) — 差异化记忆产品六家：LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS（2026-08 快照）
+- [docs/research/2026-08-14-tool-description-channels.md](./docs/research/2026-08-14-tool-description-channels.md) — 工具使用说明如何暴露给模型：两条通道与三字段白名单（rc.6 源码调研）
+- [docs/research/2026-08-14-agent-instructions.md](./docs/research/2026-08-14-agent-instructions.md) — AGENTS.md/CLAUDE.md 及 .local 变体的发现、去重、预算与动态注入机制（agent-instructions 插件源码调研）
+- [docs/research/2026-08-14-skill-catalog-shadowing.md](./docs/research/2026-08-14-skill-catalog-shadowing.md) — skill 目录注入失效调查：host/preset 双 tool-skill 互相剥目录（rc.6）
+- [docs/research/2026-08-18-web-file-open-trust.md](./docs/research/2026-08-18-web-file-open-trust.md) — Web UI 点击文件名打开本机文件的信任链路：fence 特权方法集钉死 loopback、SSH 隧道不可区分、nativeOpen:false 文档实现偏差（rc.7）
+- [docs/research/2026-08-24-settings-loopback-fence.md](./docs/research/2026-08-24-settings-loopback-fence.md) — 远程域名打开模型配置页报「加载提供方目录失败」：settings 镜像与服务端 API 双层 loopback 围栏，设计而非故障（0.1.1-rc.2）
+- [docs/research/2026-08-25-subagent-settlement-delivery.md](./docs/research/2026-08-25-subagent-settlement-delivery.md) — 子 agent 完成通知的投递机制：忙时 steer/闲时 followup/teardown 时 inject 三路分发、必达优先的设计理由、无"等空闲"开关（0.1.1-rc.2）
+- [docs/research/2026-08-25-subagent-runtime-overhead.md](./docs/research/2026-08-25-subagent-runtime-overhead.md) — 并发子 agent 拖慢整机的机制链：in-process 事件循环竞争、每 chunk 全局分发、mux 无过滤推流、每 step 全量 assemble、远端配额竞争；含定位判据与缓解（0.1.1-rc.2）
+- [docs/research/2026-08-26-session-list-scaling-archive.md](./docs/research/2026-08-26-session-list-scaling-archive.md) — session.list 随会话堆积规模化(664 条≈1s/880KB)、API 归档为何治不了、冷会话物理归档的安全边界与实操效果（0.1.1-rc.2）
+- [docs/research/2026-08-17-plugin-fault-isolation.md](./docs/research/2026-08-17-plugin-fault-isolation.md) — 插件故障为什么阻断 DSH 启动：加载链路、四组对照实验、三层防线（rc.6）
+- [docs/research/2026-08-16-mcp-config-across-agents.md](./docs/research/2026-08-16-mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
+- [docs/research/2026-08-23-context-compaction.md](./docs/research/2026-08-23-context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
+- [docs/research/2026-08-22-long-session-attention-degradation.md](./docs/research/2026-08-22-long-session-attention-degradation.md) — goal 长会话注意力退化调研：Context Rot / lost-in-the-middle / 轨迹锁定 / 目标代理四机制、六种业界解法对照（Ralph / compaction / 外部评审等）、定时评审子agent 设计的六条落地建议（2026-08 快照）
+- [docs/research/memory/2026-08-16-agent-memory-landscape.md](./docs/research/memory/2026-08-16-agent-memory-landscape.md) — Agent 记忆系统全景调研总览：15 家产品五维决策、跨产品共识与分歧、DSH 记忆层最小路径（2026-08 快照）
+- [docs/research/memory/2026-08-16-hermes-memory.md](./docs/research/memory/2026-08-16-hermes-memory.md) — Hermes Agent 记忆机制：热/冷/技能三层 + 9 个 memory provider 生态（2026-08 快照）
+- [docs/research/memory/2026-08-16-openclaw-memory.md](./docs/research/memory/2026-08-16-openclaw-memory.md) — OpenClaw 记忆架构：五层 tier、provenance 溯源、dreaming 离线晋升、双 lane 召回（2026-08 快照）
+- [docs/research/memory/2026-08-16-coding-agents-memory.md](./docs/research/memory/2026-08-16-coding-agents-memory.md) — Claude Code / Codex / OpenCode 跨会话记忆：指令层级 + auto memory/Memories、文件式 vs 数据库式取舍（2026-08 快照）
+- [docs/research/memory/2026-08-16-memory-middleware.md](./docs/research/memory/2026-08-16-memory-middleware.md) — 通用记忆中间件头部三家：Mem0 / Zep(Graphiti) / Letta(MemGPT)（2026-08 快照）
+- [docs/research/memory/2026-08-16-memory-middleware-emerging.md](./docs/research/memory/2026-08-16-memory-middleware-emerging.md) — 差异化记忆产品六家：LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS（2026-08 快照）
 
 ## 版本观察（自动）
 

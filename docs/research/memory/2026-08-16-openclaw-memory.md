@@ -2,7 +2,7 @@
 
 > **版本基准**：OpenClaw 线上官方文档（docs.openclaw.ai，对应约 v2026.5–2026.6 时期，2026-08 抓取）+ GitHub 主仓 main 分支结构 + 第三方源码/社区文章交叉验证。注意 OpenClaw 迭代极快（记忆子系统在 2026 年内经历"QMD 引入又移除"等大改），本文结论对应上述时点。
 >
-> 背景：OpenClaw 是开源个人 AI 助手（前身 Clawdbot → Moltbot → OpenClaw，作者 Peter Steinberger，现由非营利 OpenClaw Foundation 维护，MIT 协议），单操作者定位，跑在自己设备上，通过本地 Gateway 接入 WhatsApp/Telegram/Slack 等聊天渠道。总览与跨产品对比见 [agent-memory-landscape.md](./agent-memory-landscape.md)。
+> 背景：OpenClaw 是开源个人 AI 助手（前身 Clawdbot → Moltbot → OpenClaw，作者 Peter Steinberger，现由非营利 OpenClaw Foundation 维护，MIT 协议），单操作者定位，跑在自己设备上，通过本地 Gateway 接入 WhatsApp/Telegram/Slack 等聊天渠道。总览与跨产品对比见 [2026-08-16-agent-memory-landscape.md](./2026-08-16-agent-memory-landscape.md)。
 
 ## 0. 设计哲学（理解一切细节的前提）
 

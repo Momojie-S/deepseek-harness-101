@@ -2,7 +2,7 @@
 
 > **版本基准**：2026-08 调研快照。对象分三组——**重点 agent 产品**（Hermes Agent、OpenClaw）、**coding agent**（Claude Code / Codex CLI / OpenCode）、**通用记忆中间件**（头部 Mem0 / Zep / Letta + 差异化 LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS）。各家产品迭代极快（半年内 Mem0 换算法、Zep 弃社区版、Claude Code auto memory 默认化），本文结论仅对上述时点负责，分篇明细见文末索引。
 >
-> 调研动机：DSH 目前只有"指令文件注入"（AGENTS.md 三层，见 [../agent-instructions.md](../agent-instructions.md)）与 session 内 goal/todo，**没有跨会话记忆层**。本调研回答"业界怎么做、DSH 该抄什么"。
+> 调研动机：DSH 目前只有"指令文件注入"（AGENTS.md 三层，见 [../2026-08-14-agent-instructions.md](../2026-08-14-agent-instructions.md)）与 session 内 goal/todo，**没有跨会话记忆层**。本调研回答"业界怎么做、DSH 该抄什么"。
 
 ---
 
@@ -67,9 +67,9 @@
 
 | 文件 | 内容 |
 |---|---|
-| [hermes-memory.md](./hermes-memory.md) | Hermes Agent：三层+provider 生态、冻结快照、容量仪表、9 provider 对比、钩子契约 |
-| [openclaw-memory.md](./openclaw-memory.md) | OpenClaw：五层 tier、provenance、dreaming 三阶段、双 lane 召回、standing intents、投毒防御 |
-| [coding-agents-memory.md](./coding-agents-memory.md) | Claude Code / Codex CLI / OpenCode：指令文件层级、auto memory/Memories/Chronicle、压缩与续跑边界、九维度对比 |
-| [memory-middleware.md](./memory-middleware.md) | Mem0 / Zep(Graphiti) / Letta(MemGPT)：两阶段→v3 ADD-only、双时态知识图、self-edit 与 sleep-time、横向对比 |
-| [memory-middleware-emerging.md](./memory-middleware-emerging.md) | LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS：程序性记忆、认识论分层、有向记忆、动态画像、反馈环、MemCube |
-| [../agent-instructions.md](../agent-instructions.md) | （既有）DSH 自身 AGENTS.md 注入机制——DSH 侧对照底稿 |
+| [2026-08-16-hermes-memory.md](./2026-08-16-hermes-memory.md) | Hermes Agent：三层+provider 生态、冻结快照、容量仪表、9 provider 对比、钩子契约 |
+| [2026-08-16-openclaw-memory.md](./2026-08-16-openclaw-memory.md) | OpenClaw：五层 tier、provenance、dreaming 三阶段、双 lane 召回、standing intents、投毒防御 |
+| [2026-08-16-coding-agents-memory.md](./2026-08-16-coding-agents-memory.md) | Claude Code / Codex CLI / OpenCode：指令文件层级、auto memory/Memories/Chronicle、压缩与续跑边界、九维度对比 |
+| [2026-08-16-memory-middleware.md](./2026-08-16-memory-middleware.md) | Mem0 / Zep(Graphiti) / Letta(MemGPT)：两阶段→v3 ADD-only、双时态知识图、self-edit 与 sleep-time、横向对比 |
+| [2026-08-16-memory-middleware-emerging.md](./2026-08-16-memory-middleware-emerging.md) | LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS：程序性记忆、认识论分层、有向记忆、动态画像、反馈环、MemCube |
+| [../2026-08-14-agent-instructions.md](../2026-08-14-agent-instructions.md) | （既有）DSH 自身 AGENTS.md 注入机制——DSH 侧对照底稿 |

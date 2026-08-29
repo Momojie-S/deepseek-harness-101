@@ -1,8 +1,8 @@
 # 二线/新兴通用记忆产品调研（6 家）
 
-> **版本基准**：2026-08 调研时点的官方文档、官方博客、arXiv 论文与 GitHub 仓库（license 均已直接核实到仓库文件）。聚焦**差异化路线**产品：头部产品（Mem0/Zep/Letta）见 [memory-middleware.md](./memory-middleware.md)，本文只挖与主流范式"LLM 提取事实→向量/图存储→混合检索"的机制差异。
+> **版本基准**：2026-08 调研时点的官方文档、官方博客、arXiv 论文与 GitHub 仓库（license 均已直接核实到仓库文件）。聚焦**差异化路线**产品：头部产品（Mem0/Zep/Letta）见 [2026-08-16-memory-middleware.md](./2026-08-16-memory-middleware.md)，本文只挖与主流范式"LLM 提取事实→向量/图存储→混合检索"的机制差异。
 >
-> 关联阅读：[agent-memory-landscape.md](./agent-memory-landscape.md)（总览）。
+> 关联阅读：[2026-08-16-agent-memory-landscape.md](./2026-08-16-agent-memory-landscape.md)（总览）。
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **版本基准**：Hermes Agent v0.20.1（2026-08 调研时点），信息来源为官方文档站（hermes-agent.nousresearch.com，中英文档页）、GitHub 仓库（NousResearch/hermes-agent，MIT）、第三方深读文章（vectorize.io 两篇）与第三方插件仓库（TencentCloud/TencentDB-Agent-Memory）。产品迭代快，provider 数量与机制细节以官方文档现行版为准。
 >
-> 关联阅读：[openclaw-memory.md](./openclaw-memory.md)（同期对比调研）、[agent-memory-landscape.md](./agent-memory-landscape.md)（总览）。
+> 关联阅读：[2026-08-16-openclaw-memory.md](./2026-08-16-openclaw-memory.md)（同期对比调研）、[2026-08-16-agent-memory-landscape.md](./2026-08-16-agent-memory-landscape.md)（总览）。
 
 **调研口径校正**：vectorize.io 文章（2026-03）写作时 provider 为 7 种；官方文档现行版自述"8 个外部 memory provider 插件"，但正文实际收录 9 个（Honcho、OpenViking、Mem0、Hindsight、Holographic、RetainDB、ByteRover、Supermemory、Memori，计数未同步）。**TencentDB Agent Memory 不是官方 bundled provider**——是腾讯云自己维护的第三方插件，按 bundled 路径约定 vendored 分发。**"三层记忆"非官方提法**：vectorize.io 将整个体系归纳为"四层"（prompt memory / session archive / skills / external provider）；若只算内置部分则是"热记忆 + 冷档案 + 程序性技能"三层。
 
