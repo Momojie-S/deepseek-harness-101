@@ -19,3 +19,9 @@
 [submodule "plugins/dsh-archive-retention"]
 	path = plugins/dsh-archive-retention
 	url = https://github.com/Momojie-S/dsh-archive-retention.git
+[submodule "plugins/dsh-right-dock"]
+	path = plugins/dsh-right-dock
+	url = https://github.com/Momojie-S/dsh-right-dock.git
+[submodule "plugins/dsh-workspace-files"]
+	path = plugins/dsh-workspace-files
+	url = https://github.com/Momojie-S/dsh-workspace-files.git
