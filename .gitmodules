@@ -16,3 +16,6 @@
 [submodule "plugins/dsh-subagent-cleanup"]
 	path = plugins/dsh-subagent-cleanup
 	url = https://github.com/Momojie-S/dsh-subagent-cleanup.git
+[submodule "plugins/dsh-archive-retention"]
+	path = plugins/dsh-archive-retention
+	url = https://github.com/Momojie-S/dsh-archive-retention.git

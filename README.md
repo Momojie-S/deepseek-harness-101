@@ -13,6 +13,7 @@
 | @momojie-s/dsh-right-dock | `plugins/dsh-right-dock` | Web UI 右侧栏平台：推挤式（非遮挡）多标签 dock，插件通过 `rightdock.tab` 坐席挂标签页；窄屏自动转浮层抽屉 |
 | @momojie-s/dsh-schedspawn | `plugins/dsh-schedspawn` | `schedspawn` 工具：定时直启独立子agent（可按任务指定模型路由，add 时校验路由），完成后自动回报本会话；忙时顺延、失败熔断、孤儿接管 |
 | @momojie-s/dsh-subagent-cleanup | `plugins/dsh-subagent-cleanup` | 子agent会话清理双工具：会话自清（枚举本会话后代，无闲置门槛）+ 运维侧跨 workspace 大扫除（进程启动后未写入 && 闲置 ≥24h 双重判据）；默认归档可逆（落 manifest 回滚清单），显式 mode=delete 才彻底删除 |
+| @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
 
 ## 使用心得笔记
@@ -22,6 +23,7 @@
 - [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、防炸启动四道闸门、踩坑速查）
 - [docs/usage/agent-presets.md](./docs/usage/agent-presets.md) — Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
 - [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
+- [docs/usage/dsh-plugin-settings-page.md](./docs/usage/dsh-plugin-settings-page.md) — 插件设置页卡片:让插件配置在 Web 界面可编辑——双半部结构、设置命名空间、keyed slot 注册、构建门禁与踩坑实录（0.1.1-rc.2 实装验证）
 
 **调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
 
