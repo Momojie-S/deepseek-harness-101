@@ -63,7 +63,7 @@ docs/design/decisions/         # ADR，一个决策一个文件：NNNN-<slug>.md
 
 ## DSH 插件开发
 
-**开发方法论、HMR 缓存行为、patch 系统限制等详见 [docs/usage/dsh-plugin-development.md](docs/usage/dsh-plugin-development.md)**（完整展开；`AGENTS.local.md` 只留浓缩铁律）。核心要点：
+**开发方法论、HMR 缓存行为、patch 系统限制等详见 [docs/usage/dsh-plugin-development.md](docs/usage/dsh-plugin-development.md)**（完整展开；`AGENTS.local.md` 只留浓缩铁律）。**插件配置要在设置页可编辑（GUI 卡片）用 [docs/usage/dsh-plugin-settings-page.md](docs/usage/dsh-plugin-settings-page.md)**（双半部 bundle：宿主 `installSettingsSection` + 客户端 keyed slot 卡片）。写新插件先找同类参考实现：host-only 模型工具看 `plugins/dsh-schedspawn`，设置页卡片双半部看 `plugins/dsh-archive-retention`，自绘面板双半部看 `plugins/dsh-workspace-files`。核心要点：
 
 - DSH 源码与文档：[github.com/deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，开发时**先读官方文档**（`docs/user/develop/`）；本机 checkout 路径等个人环境信息见 `AGENTS.local.md`
 - 插件用 TypeScript function 形式：`export const name` + `export function apply(ctx, config)`
