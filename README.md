@@ -18,12 +18,12 @@
 
 ## 使用心得笔记
 
-**开发指南**（`docs/usage/`，活文档——指导当前开发，随实践保持最新）：
+**开发指南**（`docs/usage/`，活文档——指导当前开发，随实践保持最新）。`official-*` 前缀 = DSH 官方功能的使用说明；无前缀 = 自研插件开发方法论（自研插件各自的使用说明在插件仓 README）：
 
 - [docs/usage/dsh-plugin-development.md](./docs/usage/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、防炸启动四道闸门、踩坑速查）
-- [docs/usage/agent-presets.md](./docs/usage/agent-presets.md) — Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
-- [docs/usage/mcp.md](./docs/usage/mcp.md) — 怎么在 DSH 添加 MCP server（插件 + patch + 踩坑）
 - [docs/usage/dsh-plugin-settings-page.md](./docs/usage/dsh-plugin-settings-page.md) — 插件设置页卡片:让插件配置在 Web 界面可编辑——双半部结构、设置命名空间、keyed slot 注册、构建门禁与踩坑实录（0.1.1-rc.2 实装验证）
+- [docs/usage/official-agent-presets.md](./docs/usage/official-agent-presets.md) — `official` Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
+- [docs/usage/official-mcp.md](./docs/usage/official-mcp.md) — `official` 怎么在 DSH 添加 MCP server（官方 dsh-mcp-client：patch 配置 + 踩坑；自研 workspace-mcp 见插件仓 README）
 
 **调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
 
