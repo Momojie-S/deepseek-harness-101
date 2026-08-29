@@ -276,6 +276,7 @@ dsh: patch: name mismatch for "pwsh-sandbox" (expected "@deepseek-ai/dsh-pwsh-sa
 | 需求 | 机制 |
 |------|------|
 | 注册模型可调用工具 | `ctx.tools.register(defineTool({...}))` |
+| 插件配置在设置页可编辑（GUI 卡片） | 宿主 `installSettingsSection` + 客户端 `settings.plugin.item` 坐席卡片——双半部 bundle，专文见 [dsh-plugin-settings-page.md](./dsh-plugin-settings-page.md) |
 | 拦截/决策工具调用 | `ctx.on('tools/pre-execute', (exec, next) => decision)` |
 | 观察工具结果 | `ctx.on('tools/result', ...)` |
 | 包装工具执行全周期 | `ctx.on('tools/execute', ...)` |
