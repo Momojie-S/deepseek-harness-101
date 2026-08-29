@@ -17,6 +17,9 @@ Thumbs.db
 
 # dsh 运行时产物（version-check 状态、watchtest 等；项目配置 mcp.servers.yml 豁免，已跟踪文件不受影响）
 .dsh/*
+
+# 外部 skill 克隆仓（.dsh/skills/ 里的 junction 指向这里；含嵌套 .git，属机器本地内容）
+skills-external/
 !.dsh/mcp.servers.yml
 
 # dsh workspace-env（本地凭据，绝不入库）
