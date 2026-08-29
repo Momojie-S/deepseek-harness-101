@@ -158,5 +158,5 @@ Web UI 里有四个表层（`dsh-client-ui-agent-preset`，已在本部署 web b
 ## 相关文档
 
 - 官方包文档（机制权威）：源码仓 `packages/preset/agent-presets/README.zh.md`、`packages/client/ui-agent-preset/README.zh.md`
-- [dsh-plugin-development.md](./dsh-plugin-development.md)——插件行级细节（function 形式、inject、副作用清理），preset 里的自定义行同套规则
+- [dsh-plugin-development.md](../development-guide/dsh-plugin-development.md)——插件行级细节（function 形式、inject、副作用清理），preset 里的自定义行同套规则
 - [mcp.md](./mcp.md)——MCP server 配置（宿主组合层的事，不进 preset）

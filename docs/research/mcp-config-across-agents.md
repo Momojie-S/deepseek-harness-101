@@ -78,6 +78,6 @@
 1. **文件位置不孤立**：`.dsh/` 点目录 + 专用文件与 Codex `.codex/`、Gemini `.gemini/` 同型，不必向根级 `.mcp.json` 靠拢——后者键名生态仍分裂，兼容收益存疑
 2. **低成本 gap**（建议补）：`enabled: false` 禁用开关（三家全有）、工具过滤（`enabled_tools`/`disabled_tools` 式即可）、`startupTimeoutMs`（现在只有调用超时）
 3. **安全差距要知情**：DSH 对 clone 来的 `.dsh/mcp.servers.yml` 无任何门禁（比三家都宽）。个人工具可接受；若插件将来公开分发，Claude 的 pending-approval 是参考模型
-4. **secret 方向**：主流是"引用不落盘"（`${VAR}`/环境变量名/`{env:}`/`{file:}`）。DSH 裸值是 launch snapshot 冻结 `.env` 不进 `process.env` 逼出来的妥协——若未来该机制改善，可向引用式迁移（对齐 `docs/usage/official-mcp.md` 的既定结论）
+4. **secret 方向**：主流是"引用不落盘"（`${VAR}`/环境变量名/`{env:}`/`{file:}`）。DSH 裸值是 launch snapshot 冻结 `.env` 不进 `process.env` 逼出来的妥协——若未来该机制改善，可向引用式迁移（对齐 `docs/official-usage/mcp.md` 的既定结论）
 5. **已领先点**：配置文件热重载（三家均无）；agent 作用域注册随会话生灭（别家是"启动时全连"或"按需连"）。同名遮蔽语义（agent 遮蔽全局，per-tool）是我们实测过的，别家同类合并容易翻车（如 Crush 的全局 `crush.json` 与项目 `.crush.json` 合并曾出 [#870](https://github.com/charmbracelet/crush/issues/870)）
 6. **上下文经济是深水区**：Claude Code 的 tool search + 输出限额一整套是围绕"MCP 工具吃上下文"的工程答案；DSH 目前全量注册，工具多了会遇到同一问题，届时可参考其分层（名字常驻、定义按需）

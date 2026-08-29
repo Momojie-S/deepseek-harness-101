@@ -7,7 +7,8 @@
 ```
 deepseek-harness-101/
 ├── plugins/dsh-xxx/  # 插件合集：每个插件是独立 git 仓库（submodule），作用见各插件 README
-├── docs/usage/       # 开发指南（活文档）
+├── docs/development-guide/  # 自研插件开发指南（活文档）
+├── docs/official-usage/     # DSH 官方功能使用说明（活文档）
 ├── docs/research/    # 调研笔记（版本快照，归档见"文章"节）
 ├── .dsh/             # 项目级 DSH 配置（如 mcp.servers.yml）
 ├── .env              # workspace 级环境变量
@@ -58,12 +59,12 @@ docs/design/decisions/         # ADR，一个决策一个文件：NNNN-<slug>.md
 
 - **overview.md 单文件**：插件规模小，一页讲完，不拆多文件
 - **ADR 轻量五段**：状态（accepted/superseded）、背景、备选、决策、后果。只记真正的分叉决策（有备选可比、纠结过的）；小设计点写进 overview
-- **分层原则**：插件特定设计 → 插件仓库 `docs/design/`；跨插件方法论（HMR 缓存、patch 限制、开发流程）→ 合集 `docs/usage/` 文章
+- **分层原则**：插件特定设计 → 插件仓库 `docs/design/`；跨插件方法论（HMR 缓存、patch 限制、开发流程）→ 合集 `docs/development-guide/` 与 `docs/official-usage/` 文章
 - 插件 README 文末链接指向自己的 `docs/design/overview.md`
 
 ## DSH 插件开发
 
-**开发方法论、HMR 缓存行为、patch 系统限制等详见 [docs/usage/dsh-plugin-development.md](docs/usage/dsh-plugin-development.md)**（完整展开；`AGENTS.local.md` 只留浓缩铁律）。**插件配置要在设置页可编辑（GUI 卡片）用 [docs/usage/dsh-plugin-settings-page.md](docs/usage/dsh-plugin-settings-page.md)**（双半部 bundle：宿主 `installSettingsSection` + 客户端 keyed slot 卡片）。写新插件先找同类参考实现：host-only 模型工具看 `plugins/dsh-schedspawn`，设置页卡片双半部看 `plugins/dsh-archive-retention`，自绘面板双半部看 `plugins/dsh-workspace-files`。核心要点：
+**开发方法论、HMR 缓存行为、patch 系统限制等详见 [docs/development-guide/dsh-plugin-development.md](docs/development-guide/dsh-plugin-development.md)**（完整展开；`AGENTS.local.md` 只留浓缩铁律）。**插件配置要在设置页可编辑（GUI 卡片）用 [docs/development-guide/dsh-plugin-settings-page.md](docs/development-guide/dsh-plugin-settings-page.md)**（双半部 bundle：宿主 `installSettingsSection` + 客户端 keyed slot 卡片）。写新插件先找同类参考实现：host-only 模型工具看 `plugins/dsh-schedspawn`，设置页卡片双半部看 `plugins/dsh-archive-retention`，自绘面板双半部看 `plugins/dsh-workspace-files`。核心要点：
 
 - DSH 源码与文档：[github.com/deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，开发时**先读官方文档**（`docs/user/develop/`）；本机 checkout 路径等个人环境信息见 `AGENTS.local.md`
 - 插件用 TypeScript function 形式：`export const name` + `export function apply(ctx, config)`
@@ -101,7 +102,8 @@ workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**
 
 | 类别 | 目录 | 生命周期 |
 |------|------|----------|
-| **开发指南** | `docs/usage/` | **活文档**：指导当前开发/使用，实践或 DSH 行为变化时**同步更新** |
+| **开发指南（自研插件）** | `docs/development-guide/` | **活文档**：指导当前开发，实践或 DSH 行为变化时**同步更新** |
+| **使用指南（官方功能）** | `docs/official-usage/` | **活文档**：DSH 官方功能的使用说明，同样保持最新 |
 | **调研笔记** | `docs/research/` | **版本快照**：对某 DSH 版本的源码调研/问题调查，**开头必须写版本基准**（部署包版本；有源码对照仓再写路径）。结论被新版本取代时**不追更**——移入 `docs/research/archived/` 并在文首标注被什么取代 |
 
 判断标准：文章回答"**怎么做**"（配置方法、开发流程）→ 指南；回答"**机制是什么/为什么**"（源码调研、失效调查）→ 调研笔记。DSH 迭代快，无版本信息的机制结论会过期并误导后来者。
