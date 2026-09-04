@@ -15,6 +15,7 @@
 | @momojie-s/dsh-subagent-cleanup | `plugins/dsh-subagent-cleanup` | 子agent会话清理双工具：会话自清（枚举本会话后代，无闲置门槛）+ 运维侧跨 workspace 大扫除（进程启动后未写入 && 闲置 ≥24h 双重判据）；默认归档可逆（落 manifest 回滚清单），显式 mode=delete 才彻底删除 |
 | @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
+| @momojie-s/dsh-subagent-steer | `plugins/dsh-subagent-steer` | `steer_subagent` 工具：向正在工作的后台子 agent 的当前轮插入新指示（默认 step 边界温和插话，已完成工作保留；可选 `mode: turn` 硬打断重开）；`send_message` 排队行为不变，纯增量 |
 
 ## 使用心得笔记
 

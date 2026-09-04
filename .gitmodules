@@ -25,3 +25,6 @@
 [submodule "plugins/dsh-workspace-files"]
 	path = plugins/dsh-workspace-files
 	url = https://github.com/Momojie-S/dsh-workspace-files.git
+[submodule "plugins/dsh-subagent-steer"]
+	path = plugins/dsh-subagent-steer
+	url = https://github.com/Momojie-S/dsh-subagent-steer.git
