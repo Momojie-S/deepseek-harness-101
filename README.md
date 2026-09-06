@@ -8,14 +8,12 @@
 |------|------|------|
 | @momojie-s/dsh-workspace-mcp | `plugins/dsh-workspace-mcp` | 按 workspace（session cwd）自动加载/卸载 MCP server，工具注册到 agent scope |
 | @momojie-s/dsh-workspace-env | `plugins/dsh-workspace-env` | pwsh 命令自动注入 workspace `.env` 环境变量，实现 workspace 级环境变量隔离 |
-| @momojie-s/dsh-subagent-model | `plugins/dsh-subagent-model` | `subagent_model` 工具：委派子代理时可按次指定模型路由（provider/model/max_tokens）与上下文继承（默认干净上下文，`fresh_context: false` 按调用时刻最新完成轮次 fork 当前对话），fork 自官方 tool-subagent |
 | @momojie-s/dsh-workspace-files | `plugins/dsh-workspace-files` | Web UI 工作区文件面板：可调宽文件树 + 递归搜索 + Markdown 渲染/语法高亮，路由双重围栏（loopback + 会话 cwd）；装入 right-dock 时作为「文件」标签页 |
 | @momojie-s/dsh-right-dock | `plugins/dsh-right-dock` | Web UI 右侧栏平台：推挤式（非遮挡）多标签 dock，插件通过 `rightdock.tab` 坐席挂标签页；窄屏自动转浮层抽屉 |
 | @momojie-s/dsh-schedspawn | `plugins/dsh-schedspawn` | `schedspawn` 工具：定时直启独立子agent（可按任务指定模型路由，add 时校验路由），完成后自动回报本会话；忙时顺延、失败熔断、孤儿接管 |
 | @momojie-s/dsh-subagent-cleanup | `plugins/dsh-subagent-cleanup` | 子agent会话清理双工具：会话自清（枚举本会话后代，无闲置门槛）+ 运维侧跨 workspace 大扫除（进程启动后未写入 && 闲置 ≥24h 双重判据）；默认归档可逆（落 manifest 回滚清单），显式 mode=delete 才彻底删除 |
 | @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
-| @momojie-s/dsh-subagent-steer | `plugins/dsh-subagent-steer` | `steer_subagent` 工具：向正在工作的后台子 agent 的当前轮插入新指示（默认 step 边界温和插话，已完成工作保留；可选 `mode: turn` 硬打断重开）；`send_message` 排队行为不变，纯增量 |
 
 ## 使用心得笔记
 

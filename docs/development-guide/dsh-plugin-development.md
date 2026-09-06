@@ -294,7 +294,7 @@ dsh: patch: name mismatch for "pwsh-sandbox" (expected "@deepseek-ai/dsh-pwsh-sa
 1. **工具级 `description`**（`defineTool`）：写"何时用 + 输出语义"，触发条件比功能罗列更有用
 2. **参数级 `description`**：写取值语义与默认行为，默认必须写明（"Defaults to true"、"Omit to inherit"）——它是模型填对参数的唯一依据
 3. **行为引导**：倾向性/排他规则（"优先 X 别用 Y"）放 `ctx.systemPrompt.section({ name: 'tool:<name>', order: 100-199, text })`，工具不可用时 text 返回空串（空段自动丢弃）
-4. **行为随配置变化**：把差异在注册时拼进 description（参考 `plugins/dsh-subagent-model` 的 `providerWording`）
+4. **行为随配置变化**：把差异在注册时拼进 description（参考已退役插件 dsh-subagent-model 的 `providerWording`，源码存档于 github.com/Momojie-S/dsh-subagent-model，本仓已摘除 submodule）
 
 机制细节（三字段白名单、Code Mode SDK 投影、MCP 透传）见调研笔记 [tool-description-channels.md](../research/2026-08-14-tool-description-channels.md)。
 
@@ -341,4 +341,4 @@ export function apply(ctx: any) {
 
 - `plugins/dsh-workspace-mcp` — 事件监听（`agent/created` 主 + `pre-step` 兜底）+ agent-scoped 工具注册 + chokidar 配置热更新
 - `plugins/dsh-workspace-env` — `inject: ['shell']` + spawnSpec 包装 + `ctx.effect` 可逆清理；含 22 个单元测试
-- `plugins/dsh-subagent-model` — 工具使用说明写法参照（`providerWording` 按配置拼措辞、参数默认行为写明、引导段 order 频段与空段语义）
+- ~~`plugins/dsh-subagent-model`~~ — 已退役（0.1.2-rc.1 官方原生模型路由覆盖，submodule 已摘除）；工具使用说明写法仍可参照其源码存档（github.com/Momojie-S/dsh-subagent-model，`providerWording` 按配置拼措辞、参数默认行为写明、引导段 order 频段与空段语义）
