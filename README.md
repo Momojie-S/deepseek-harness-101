@@ -15,6 +15,12 @@
 | @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
 
+## Fork 定制
+
+| Fork | 路径 | 说明 |
+|------|------|------|
+| Momojie-S/deepseek-harness（fork 自 deepseek-ai/deepseek-harness） | `forks/deepseek-harness` | 分支 `momojie/transfer-optimization`（基线 0.1.2-rc.1）：远程链路数据传输优化——P1 事件流 WS 压缩（permessage-deflate）已落地，P2 列表字段裁剪/P3 事件合流待测；设计见 `docs/fork/transfer-optimization.md`；部署走 ops 安装树补丁（非 fork 发行），上游采纳后退役 |
+
 ## 使用心得笔记
 
 **开发指南**（活文档——指导当前开发，随实践保持最新），按读者分两个目录：docs/development-guide/（自研插件开发方法论）与 docs/official-usage/（DSH 官方功能的使用说明；自研插件各自的使用说明在插件仓 README）：

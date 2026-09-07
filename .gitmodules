@@ -22,3 +22,7 @@
 [submodule "plugins/dsh-workspace-files"]
 	path = plugins/dsh-workspace-files
 	url = https://github.com/Momojie-S/dsh-workspace-files.git
+[submodule "forks/deepseek-harness"]
+	path = forks/deepseek-harness
+	url = git@github-momojie:Momojie-S/deepseek-harness.git
+	branch = momojie/transfer-optimization
