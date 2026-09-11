@@ -57,7 +57,7 @@ window.__ModuleLoader__.load({ id: '<包名>', factory: (require) => {
 - **外部依赖一律 `require`**,且只能 require 平台模块表里的词(web shell `seed.ts` 是唯一权威清单):`react`、`react/jsx-runtime`、`react-dom`、`@deepseek-ai/cordis`、`@deepseek-ai/dsh-client-ui-slots`、`@deepseek-ai/dsh-client-web-react`、`@deepseek-ai/dsh-client-ui-primitives`、`@deepseek-ai/dsh-client-ui-attachment`、`@deepseek-ai/dsh-client-schema-form`。require 表外的词 = 页面运行时炸。
 - **源码里禁止 `import`/`export` 语句**:export 会进工厂作用域直接语法错;导出用 `exports.apply = apply` / `module.exports = { … }`。
 - **服务走 cordis 注入,不走 require**:`export const inject = ['slots', 'settingsScope']`(以 `const inject = [...]` + `exports.inject` 的形式),`apply(ctx)` 里用 `ctx.slots` / `ctx.settingsScope`。`settingsScope` 服务由设置壳(`dsh-client-ui-settings`)提供,`slots` 由 client-runtime 提供。
-- `package.json` 声明(照抄 dsh-workspace-files 的双字段写法):`exports['./client']` 指向产物;`dsh.client` 与 `dshClient` 两处同形:`{ inject: ['@deepseek-ai/dsh-client-runtime', …], platform: 'web' }`——inject 列的是**提供服务/需先加载的包**,不是 require 词。
+- `package.json` 声明(照抄 dsh-workspace-files 的双字段写法,该插件已退役、源码见 [github.com/Momojie-S/dsh-workspace-files](https://github.com/Momojie-S/dsh-workspace-files)):`exports['./client']` 指向产物;`dsh.client` 与 `dshClient` 两处同形:`{ inject: ['@deepseek-ai/dsh-client-runtime', …], platform: 'web' }`——inject 列的是**提供服务/需先加载的包**,不是 require 词。
 
 ### 卡片注册(keyed slot)
 
@@ -89,7 +89,7 @@ scope.subscribe(fn)        // 变更推送(其他页面实例改了也会推过�
 
 ## 构建与门禁
 
-照抄 `plugins/dsh-workspace-files/scripts/build.mjs` 的双半部编排:tsc 编宿主进 staging → 拼接客户端 bundle 进 staging → **客户端门禁**(用 react 替身沙箱执行 loader 工厂,断言 `apply` 是函数——这是唯一能在启动前抓"invalid plugin"的地方)→ 宿主 import 门禁 → rename 交换。tsc 调用建议用 `node node_modules/typescript/bin/tsc` 而不是裸 `tsc`(PATH 无 .bin 时后者必炸)。
+照抄 dsh-workspace-files 的 `scripts/build.mjs` 双半部编排(该插件已退役,源码见 [github.com/Momojie-S/dsh-workspace-files](https://github.com/Momojie-S/dsh-workspace-files)):tsc 编宿主进 staging → 拼接客户端 bundle 进 staging → **客户端门禁**(用 react 替身沙箱执行 loader 工厂,断言 `apply` 是函数——这是唯一能在启动前抓"invalid plugin"的地方)→ 宿主 import 门禁 → rename 交换。tsc 调用建议用 `node node_modules/typescript/bin/tsc` 而不是裸 `tsc`(PATH 无 .bin 时后者必炸)。
 
 ## 验证清单(闸门④的设置页专用流程)
 

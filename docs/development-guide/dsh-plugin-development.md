@@ -236,7 +236,7 @@ junction 指进 DSH 安装的模块树后，传递依赖从那里自动解析，
 
 三层防线（机制与四组实验见 [docs/research/2026-08-17-plugin-fault-isolation.md](../research/2026-08-17-plugin-fault-isolation.md)）：
 
-1. **构建原子化**：产物先进 `lib-tmp/` staging，import 门禁（`typeof apply === 'function'`）通过后 rename 交换进 `lib/`——窗口从秒级缩到两次 rename 之间，构建失败时 `lib/` 保持上一完好版本。模板：`plugins/dsh-workspace-files/scripts/build.mjs`。
+1. **构建原子化**：产物先进 `lib-tmp/` staging，import 门禁（`typeof apply === 'function'`）通过后 rename 交换进 `lib/`——窗口从秒级缩到两次 rename 之间，构建失败时 `lib/` 保持上一完好版本。模板：dsh-workspace-files 的 `scripts/build.mjs`（插件 2026-09-11 已退役，源码见 [github.com/Momojie-S/dsh-workspace-files](https://github.com/Momojie-S/dsh-workspace-files)）。
 2. **apply 内部防御**：不影响主体运行的注册（路由、可选服务）包 try/catch 降级为 warn 日志；只有插件核心承诺无法兑现才让它抛。全仓插件 build 脚本建议逐步迁移到原子构建。
 3. **应急开关**：插件坏了起不来时，在插件自带 `cordis.patch.yml` 的 entry 行加 `disabled: true`（模块根本不 import，实测最干净的灭火手段）；修好后再去掉。注意 `dsh.profile.bundles` 只接受包名字符串，不支持元组。
 
@@ -254,7 +254,7 @@ junction 指进 DSH 安装的模块树后，传递依赖从那里自动解析，
 操作要点：
 
 - **③ 是关键闸门**：启动测试不需要杀主实例——`--port` 换端口起测试进程，主实例照常服务。测试进程 exit 1 = 有炸启动问题；起来后再 curl 插件路由做④。测完 `Stop-Process` 杀测试进程（先用 `Get-NetTCPConnection -LocalPort <p>` 找 PID，别按启动时间猜杀 node）。
-- **④ 必须含浏览器验证，curl 通 ≠ UI 能用**（2026-08-17 实测教训）：带 client 半部的插件，浏览器侧 cordis loader 加载 client bundle 失败时报错文案与 host 侧炸启动**一字不差**（"invalid plugin … received object"），而 host 半部可能完全正常（路由 200）——只 curl 会漏判。错误页（"Failed to load plugins"）出现 = 浏览器侧 entry 失败；正常 UI + 功能走一遍才算④过。构建侧防线：client bundle 要在 build 门禁里按 loader 消费方式校验（模板 `plugins/dsh-workspace-files/scripts/build.mjs` 的 gate 3a）。
+- **④ 必须含浏览器验证，curl 通 ≠ UI 能用**（2026-08-17 实测教训）：带 client 半部的插件，浏览器侧 cordis loader 加载 client bundle 失败时报错文案与 host 侧炸启动**一字不差**（"invalid plugin … received object"），而 host 半部可能完全正常（路由 200）——只 curl 会漏判。错误页（"Failed to load plugins"）出现 = 浏览器侧 entry 失败；正常 UI + 功能走一遍才算④过。构建侧防线：client bundle 要在 build 门禁里按 loader 消费方式校验（模板见 dsh-workspace-files 的 `scripts/build.mjs` gate 3a，插件已退役，源码见 [github.com/Momojie-S/dsh-workspace-files](https://github.com/Momojie-S/dsh-workspace-files)）。
 - **改静态代码的标准流程**：① → ② → ③ → ④ 全过 → 才重启主 DSH。开发期迭代①②即可，③④在"准备重启/发布"前过一遍。
 - **新增插件**：`dsh plugin --profile web add` 之后**必须**过③——bundle 层是启动时快照，add 完不试启动就重启，等于拿主实例赌插件没问题。
 - **生产启动路径有专用脚本时，③ 用它的环境起**（本机：计划任务 `dsh-web` → `D:\code\ops\dsh\start-dsh.ps1` 的 env + bin.js 绝对路径），裸 `dsh --profile web` 与其不完全等价。
