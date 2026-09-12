@@ -21,6 +21,14 @@ deepseek-harness-101/
 
 每个插件是独立 git 仓库（git submodule 挂载到 `plugins/` 下）。**在插件目录内的 git 操作直接执行，不经过本仓**；本仓只记录 submodule 指针。各插件的作用、用法见其目录内的 README 和 `docs/design/`。
 
+## DSH 版本更新后的插件跟进
+
+DSH 升级（`docs/version/` 出新版观察报告）后，对 `plugins/` 逐插件核对适配性，按序做三件事：
+
+1. **适配性核对**：以新版观察报告的「逐插件影响评估」节为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——报告只验证接面签名，查不出同 id 冲突，撞上即启动炸）。
+2. **仍适配**：更新该插件 README「环境要求」的验证基准版本号——插件仓内提交并推送，父仓同步 submodule 指针（推送后指针必然落后，别漏）。
+3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md、开发指南的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive Momojie-S/<plugin>` 归档。
+
 ## 新增插件流程
 
 1. GitHub（Momojie-S 账号）建独立插件仓
