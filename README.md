@@ -42,12 +42,6 @@
 - [docs/research/2026-08-16-mcp-config-across-agents.md](./docs/research/2026-08-16-mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/2026-08-23-context-compaction.md](./docs/research/2026-08-23-context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
 - [docs/research/2026-08-22-long-session-attention-degradation.md](./docs/research/2026-08-22-long-session-attention-degradation.md) — goal 长会话注意力退化调研：Context Rot / lost-in-the-middle / 轨迹锁定 / 目标代理四机制、六种业界解法对照（Ralph / compaction / 外部评审等）、定时评审子agent 设计的六条落地建议（2026-08 快照）
-- [docs/research/memory/2026-08-16-agent-memory-landscape.md](./docs/research/memory/2026-08-16-agent-memory-landscape.md) — Agent 记忆系统全景调研总览：15 家产品五维决策、跨产品共识与分歧、DSH 记忆层最小路径（2026-08 快照）
-- [docs/research/memory/2026-08-16-hermes-memory.md](./docs/research/memory/2026-08-16-hermes-memory.md) — Hermes Agent 记忆机制：热/冷/技能三层 + 9 个 memory provider 生态（2026-08 快照）
-- [docs/research/memory/2026-08-16-openclaw-memory.md](./docs/research/memory/2026-08-16-openclaw-memory.md) — OpenClaw 记忆架构：五层 tier、provenance 溯源、dreaming 离线晋升、双 lane 召回（2026-08 快照）
-- [docs/research/memory/2026-08-16-coding-agents-memory.md](./docs/research/memory/2026-08-16-coding-agents-memory.md) — Claude Code / Codex / OpenCode 跨会话记忆：指令层级 + auto memory/Memories、文件式 vs 数据库式取舍（2026-08 快照）
-- [docs/research/memory/2026-08-16-memory-middleware.md](./docs/research/memory/2026-08-16-memory-middleware.md) — 通用记忆中间件头部三家：Mem0 / Zep(Graphiti) / Letta(MemGPT)（2026-08 快照）
-- [docs/research/memory/2026-08-16-memory-middleware-emerging.md](./docs/research/memory/2026-08-16-memory-middleware-emerging.md) — 差异化记忆产品六家：LangMem / Hindsight / Honcho / Supermemory / Cognee / MemOS（2026-08 快照）
 
 ## 版本观察（自动）
 
