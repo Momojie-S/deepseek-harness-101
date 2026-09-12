@@ -27,18 +27,18 @@ DSH 升级（`docs/version/` 出新版观察报告）后，对 `plugins/` 逐插
 
 1. **适配性核对**：以新版观察报告的「逐插件影响评估」节为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——报告只验证接面签名，查不出同 id 冲突，撞上即启动炸）。
 2. **仍适配**：更新该插件 README「环境要求」的验证基准版本号——插件仓内提交并推送，父仓同步 submodule 指针（推送后指针必然落后，别漏）。
-3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md、开发指南的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive Momojie-S/<plugin>` 归档。
+3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md、开发指南的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive <账号>/<plugin>` 归档。
 
 ## 新增插件流程
 
-1. GitHub（Momojie-S 账号）建独立插件仓
-2. **配 repo-local git 身份**（防机器全局 git 身份串账号署名；本机风险账户见 `AGENTS.local.md`）：插件目录内 `git config user.name "Momojie-S"` + `git config user.email "momojie-s@outlook.com"`（邮箱须在账号 Settings → Emails 验证过，提交才有头像/贡献图）
-3. 本仓执行 `git submodule add https://github.com/Momojie-S/<plugin-name>.git plugins/<plugin-name>`
+1. 在 GitHub 建独立插件仓（本机账号与身份配置见 `AGENTS.local.md`「本仓库 Git 账号」）
+2. **配 repo-local git 身份**（防机器全局 git 身份串账号署名；具体账号/邮箱/配置命令见 `AGENTS.local.md`）
+3. 本仓执行 `git submodule add https://github.com/<账号>/<plugin-name>.git plugins/<plugin-name>`
 4. 更新本仓 README 的插件目录表
 5. 按"插件 README 模板"写 `plugins/<plugin-name>/README.md`，加 `docs/design/` 设计文档与 LICENSE 文件（package.json 声明 MIT 就必须有，公开分发的前提）
 6. 开发完成后推送，然后发布三件套：
-   - **转公开 + 敏感扫描**：`gh repo edit Momojie-S/<plugin> --visibility public --accept-visibility-change-consequences`；转前扫历史——`git log --all --name-only --format=''` 查 `.env`/credential/密钥类文件名 + `git grep -E 'gho_|sk-|ghp_' HEAD` 查 token 模式（`.gitignore` 排除 `.env` 是第一道防线）
-   - **打 topic**：`gh repo edit Momojie-S/<plugin> --add-topic dsh-plugin,deepseek-harness`（官方引导语要求 `dsh-plugin`，聚合发现页 github.com/topics/dsh-plugin）
+   - **转公开 + 敏感扫描**：`gh repo edit <账号>/<plugin> --visibility public --accept-visibility-change-consequences`；转前扫历史——`git log --all --name-only --format=''` 查 `.env`/credential/密钥类文件名 + `git grep -E 'gho_|sk-|ghp_' HEAD` 查 token 模式（`.gitignore` 排除 `.env` 是第一道防线）
+   - **打 topic**：`gh repo edit <账号>/<plugin> --add-topic dsh-plugin,deepseek-harness`（官方引导语要求 `dsh-plugin`，聚合发现页 github.com/topics/dsh-plugin）
    - **父仓闭环**：提交 submodule 指针更新（插件仓推送后指针必然落后，别漏）
 
 > 误署名的补救：历史短可用 `git filter-branch --env-filter` 改写 + force push（会改变全部 hash，其它 clone 要 reset，父仓指针要更新）；新提交前配好 repo-local 身份则根本不会发生。
@@ -95,7 +95,7 @@ workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**
 双轨（同一命令族，只差来源）：
 
 - **开发机**：`dsh plugin --profile web add <插件目录>`——profile 得到 `link:` 依赖 + bundle 层挂载，改代码 → 原子构建 → 重启验证。**本地安装的标准方式**，与生产同构（bundle 声明/patch/client 声明的问题发布前就能暴露）。
-- **其他电脑**：`dsh plugin --profile web add github:Momojie-S/<plugin>`（首次按 pnpm 提示在 profile 的 `pnpm-workspace.yaml` 加 `allowBuilds` 授权构建），或 `pnpm pack` tarball 免授权。
+- **其他电脑**：`dsh plugin --profile web add github:<账号>/<plugin>`（首次按 pnpm 提示在 profile 的 `pnpm-workspace.yaml` 加 `allowBuilds` 授权构建），或 `pnpm pack` tarball 免授权。
 - **例外**：patch 手写 `file:///` 绝对路径行**只适用于纯 host 半部插件的临时实验**（行级 HMR 改 config 方便）；带浏览器半部的插件**必须** bundle 方式——clientModules 按"条目名=包名"从 profile 解析包，`file:///` 名字解析不到，client bundle 永远 404（rc.6 源码 `packages/client/modules`）。2026-08-17 起 profile 内零 `file:///` 行，全部走 bundle。
 
 每个插件 `package.json` 带 `dsh.bundle` 声明 + 包内 `cordis.patch.yml`（行 `name` 用包名，模块解析走 node_modules），`prepare` 脚本自包含构建（git 安装后产出 `lib/`）。
