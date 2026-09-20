@@ -18,5 +18,5 @@
 	url = https://github.com/Momojie-S/dsh-archive-retention.git
 [submodule "forks/deepseek-harness"]
 	path = forks/deepseek-harness
-	url = git@github-momojie:Momojie-S/deepseek-harness.git
+	url = https://github.com/Momojie-S/deepseek-harness.git
 	branch = momojie/transfer-optimization
