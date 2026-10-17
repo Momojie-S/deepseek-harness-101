@@ -13,6 +13,14 @@
 | @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
 
+## 第三方插件
+
+他人开发的插件，以 submodule 挂载到 `plugins/third-party/` 下，与自研插件分开存放。
+
+| 插件 | 路径 | 作用 |
+|------|------|------|
+| [dsh-zcode-coding-plan](https://github.com/yuyang2230/dsh-zcode-coding-plan)（yuyang2230，收录 v0.3.0） | `plugins/third-party/dsh-zcode-coding-plan` | 把已订阅的 GLM Coding Plan 套餐额度接入 DSH：注册 `zcode_call`（经官方 ZCode CLI 派发编码任务，享 1.5 倍套餐额度，`--resume` 多轮续接）与 `zcode_quota`（查套餐余量+配额闸门）两个工具；依赖 ZCode 客户端与套餐 Key，用法见其仓 README |
+
 ## Fork 定制
 
 | Fork | 路径 | 说明 |
@@ -66,3 +74,5 @@ git submodule update --init --recursive
    git submodule add https://github.com/Momojie-S/<plugin-name>.git plugins/<plugin-name>
    ```
 3. 更新本 README 的插件目录表。
+
+第三方插件（他人开发的插件仓）挂载到 `plugins/third-party/` 下，收录时同步「第三方插件」表并注明来源与收录版本。
