@@ -20,3 +20,7 @@
 	path = forks/deepseek-harness
 	url = https://github.com/Momojie-S/deepseek-harness.git
 	branch = momojie/transfer-optimization
+[submodule "plugins/third-party/dsh-zcode-coding-plan"]
+	path = plugins/third-party/dsh-zcode-coding-plan
+	url = https://github.com/yuyang2230/dsh-zcode-coding-plan.git
+	branch = main
