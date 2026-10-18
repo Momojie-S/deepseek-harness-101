@@ -12,6 +12,7 @@
 | @momojie-s/dsh-subagent-cleanup | `plugins/dsh-subagent-cleanup` | 子agent会话清理双工具：会话自清（枚举本会话后代，无闲置门槛）+ 运维侧跨 workspace 大扫除（进程启动后未写入 && 闲置 ≥24h 双重判据）；默认归档可逆（落 manifest 回滚清单），显式 mode=delete 才彻底删除 |
 | @momojie-s/dsh-archive-retention | `plugins/dsh-archive-retention` | 归档会话定期清理：物理归档堆与页面归档的会话记录超保留期（默认 7 天，设置页卡片可配数值+天/小时单位+cron 节奏）自动物理删除，落审计清单；宿主+客户端双半部，页面卡片复用 keyed slot 机制 |
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
+| @momojie-s/dsh-wechat-pad | `plugins/dsh-wechat-pad` | 微信接入：自研 TS Pad 协议栈（进程内）+ 登录管理（设置页「微信」独立页扫码/登出/掉线自动重登）+ 消息桥（名单过滤后每个对话一个独立 DSH 会话，autopilot 模式答复自动回发微信）+ workspace 限定模型工具；本地开发阶段（private，未建远程仓） |
 
 ## 第三方插件
 
