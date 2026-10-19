@@ -35,7 +35,14 @@ const { Menu, Button, Switch } = require('@deepseek-ai/dsh-client-ui-primitives'
 
 ## 布局骨架 CSS 仍需复制
 
-设置行等**布局形态**是各官方包私有 CSS（不在组件库）：设置行抄 `packages/client/locale/src/client/LanguageRow.module.css`、表单字段抄 `packages/client/ui-primitives/src/settings-form/fields.module.css`。姿势：复制后 class 改插件前缀、只保留 `--dsw-*` token 引用；样式表作为 React 元素渲染（`h('style', null, CSS)`）随组件卸载移除。
+组件库覆盖交互组件与表单布局，**不覆盖设置页的行形态**——两种官方形态按场景取用：
+
+| 形态 | 来源 | 适用 |
+| --- | --- | --- |
+| 表单字段式（label 上、控件下、hint、覆盖徽标/重置） | 官方组件 `SettingsForm` + `SettingsValueField`（直接用） | 「内置插件」配置页形态 |
+| 设置行式（左标题右控件 + 发丝线分隔，每项一行） | 各 feature 包私有 CSS（官方 6 个包各持一份），**复制** | 「通用设置」行形态 |
+
+复制设置行时抄 `packages/client/locale/src/client/LanguageRow.module.css`、表单输入框抄 `packages/client/ui-primitives/src/settings-form/fields.module.css`。姿势：复制后 class 改插件前缀、只保留 `--dsw-*` token 引用；样式表作为 React 元素渲染（`h('style', null, CSS)`）随组件卸载移除。紧凑展开行（`DisclosureRow`）也是官方组件，按需直用。
 
 ## 风险缓解（必做）
 

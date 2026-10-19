@@ -41,7 +41,7 @@ deepseek-harness-101/
 
 ```
 plugins/dsh-xxx/
-├── package.json                # type: module + dsh.bundle 声明（见 §2.4）；prepare 脚本自包含构建，产出 lib/
+├── package.json                # type: module + dsh.bundle 声明（见 §2.5）；prepare 脚本自包含构建，产出 lib/
 ├── tsconfig.json               # module: Node16, outDir: lib, rootDir: src
 ├── src/index.ts                # TypeScript 源码
 ├── lib/                        # 编译产物（gitignore）
@@ -57,8 +57,6 @@ plugins/dsh-xxx/
 - **ADR 轻量五段**：状态（accepted/superseded）、背景、备选、决策、后果。只记真正的分叉决策（有备选可比、纠结过的）；小设计点写进 overview
 - **分层原则**：插件特定设计 → 插件仓库 `docs/design/`；跨插件方法论 → 合集 `docs/official-usage/` 文章
 - `.temp/` 不入库，公开文档不引用其路径
-- **插件配置要在设置页可编辑**：注册 `settings.section` / `settings.plugins.tab` 贡献；机制与示例见官方包 `dsh-client-ui-settings*` 系列的 README（DSH 安装树内，`cordis_inspect_query` 可定位包目录）
-- **client 交互组件直用官方组件库，不自绘**：bundle 形态的 client 半部直接 `require('@deepseek-ai/dsh-client-ui-primitives')`（平台基线外部：Menu/Switch/Button 等，CSS 随 shell）；创造模式纯 JS 动态插件禁用。布局骨架 CSS 从官方源码（fork submodule）复制、class 加插件前缀、只留 `--dsw-*` token；ErrorBoundary 必须包住官方组件。完整姿势见 [docs/official-usage/client-ui-primitives.md](docs/official-usage/client-ui-primitives.md)
 
 ### 2.3 开发流程
 
@@ -78,7 +76,16 @@ plugins/dsh-xxx/
 5. **另起实例验证**：思路跑通后写成静态插件，构建后**另起一个 dsh web 实例（备用端口）试启动**，过四道闸门：单测 → 原子构建 → 备用端口试启动 → 冒烟。**闸门④冒烟必须真实打开浏览器过一遍 UI**——client 半部失败时 curl 检查全部通过、报错文案与 host 侧一字不差，只测路由会漏判；插件起不来时在 bundle patch 行加 `disabled: true` 应急停用（修好后再移除该行）。
 6. **真装载重启**：`dsh plugin --profile web add <插件目录>` 装进 profile，重启 DSH 后才是最终生效形态。
 
-### 2.4 部署与安装
+### 2.4 设置页与 UI 组件
+
+插件的配置入口与浏览器界面统一遵守：
+
+- **配置在设置页可编辑**：注册 `settings.section`（独立页）或 `settings.plugins.tab`（插件页内 tab）贡献；机制与示例见官方包 `dsh-client-ui-settings*` 系列的 README（DSH 安装树内，`cordis_inspect_query` 可定位包目录）
+- **交互组件直用官方组件库，不自绘**：bundle 形态的 client 半部直接 `require('@deepseek-ai/dsh-client-ui-primitives')`（平台基线外部：Menu/Switch/Button/SettingsForm 等，CSS 随 shell）；**创造模式纯 JS 动态插件禁用**（官方 practices 禁令）。ErrorBoundary 必须包住官方组件
+- **布局骨架 CSS 复制官方源码**：设置行（左标题右控件+发丝线）是各 feature 包私有形态、官方无共享组件（官方 6 个包各自持有一份）；从 fork submodule 源码复制，class 加插件前缀、只留 `--dsw-*` token，样式表以 React 元素渲染随组件卸载移除
+- 完整姿势（通道依据/lane 判别/组装模式/风险缓解）见 [docs/official-usage/client-ui-primitives.md](docs/official-usage/client-ui-primitives.md)
+
+### 2.5 部署与安装
 
 双轨（同一命令族，只差来源）：
 
