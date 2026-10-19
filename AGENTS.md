@@ -2,95 +2,83 @@
 
 本仓库是个人 DeepSeek Harness (DSH) 插件合集 + DSH 使用心得文档。指导在此仓库工作的 AI agent。
 
-## 仓库结构
+## 1. 仓库结构
 
 ```
 deepseek-harness-101/
-├── plugins/dsh-xxx/  # 插件合集：每个插件是独立 git 仓库（submodule），作用见各插件 README
-├── docs/development-guide/  # 自研插件开发指南（活文档）
-├── docs/official-usage/     # DSH 官方功能使用说明（活文档）
-├── docs/research/    # 调研笔记（版本快照，归档见"文章"节）
-├── .dsh/             # 项目级 DSH 配置（如 mcp.servers.yml）
-├── .env              # workspace 级环境变量
-├── AGENTS.md         # 本文件：项目级 agent 指令（提交）
-├── AGENTS.local.md   # 个人 agent 指令（gitignore，不提交；只放铁律和文章指针）
-└── README.md         # 访客入口：插件目录表 + 文章索引
+├── plugins/                 # 插件合集：每个插件是独立 git 仓库（submodule），内部规范见 §2
+│   ├── dsh-xxx/             # 自研插件
+│   └── third-party/         # 三方插件（他人仓库的 submodule）
+├── docs/
+│   ├── official-usage/      # DSH 官方功能使用说明（活文档）
+│   ├── research/            # 调研笔记（版本快照）：只放 DSH 相关内容（含业界对照），纯第三方产品调研不入
+│   └── version/             # 版本观察报告：计划任务自动生成，不手工维护、不进索引
+├── scripts/                 # docs/version/ 观察报告的生成脚本（计划任务调用）
+├── forks/deepseek-harness/  # DSH 官方仓 fork（submodule），读源码用
+├── .dsh/                    # 项目级 DSH 配置：mcp.servers.yml、skills/（项目级 skill）等
+├── .env                     # workspace 级环境变量（gitignore）
+├── AGENTS.md                # 本文件：项目级 agent 指令（提交）
+├── AGENTS.local.md          # 个人 agent 指令（gitignore，不提交；只放铁律和文章指针）
+└── README.md                # 访客入口：插件目录表 + 文章索引
 ```
 
-## 插件 submodule 规范
+## 2. 插件开发规范
 
 每个插件是独立 git 仓库（git submodule 挂载到 `plugins/` 下）。**在插件目录内的 git 操作直接执行，不经过本仓**；本仓只记录 submodule 指针。各插件的作用、用法见其目录内的 README 和 `docs/design/`。
 
-## DSH 版本更新后的插件跟进
+### 2.1 新增插件流程
 
-DSH 升级（`docs/version/` 出新版观察报告）后，对 `plugins/` 逐插件核对适配性，按序做三件事：
-
-1. **适配性核对**：以新版观察报告的「逐插件影响评估」节为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——报告只验证接面签名，查不出同 id 冲突，撞上即启动炸）。
-2. **仍适配**：更新该插件 README「环境要求」的验证基准版本号——插件仓内提交并推送，父仓同步 submodule 指针（推送后指针必然落后，别漏）。
-3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md、开发指南的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive <账号>/<plugin>` 归档。
-
-## 新增插件流程
-
-1. 在 GitHub 建独立插件仓（本机账号与身份配置见 `AGENTS.local.md`「本仓库 Git 账号」）
-2. **配 repo-local git 身份**（防机器全局 git 身份串账号署名；具体账号/邮箱/配置命令见 `AGENTS.local.md`）
-3. 本仓执行 `git submodule add https://github.com/<账号>/<plugin-name>.git plugins/<plugin-name>`
-4. 更新本仓 README 的插件目录表
-5. 按"插件 README 模板"写 `plugins/<plugin-name>/README.md`，加 `docs/design/` 设计文档与 LICENSE 文件（package.json 声明 MIT 就必须有，公开分发的前提）
-6. 开发完成后推送，然后发布三件套：
+1. 在 GitHub 建独立插件仓
+2. 本仓执行 `git submodule add https://github.com/<账号>/<plugin-name>.git plugins/<plugin-name>`
+3. 更新本仓 README 的插件目录表
+4. 按 §2.2 的 README 六段写 `plugins/<plugin-name>/README.md`，加 `docs/design/` 设计文档与 LICENSE 文件（package.json 声明 MIT 就必须有，公开分发的前提）
+5. 开发完成后推送，然后发布三件套：
    - **转公开 + 敏感扫描**：`gh repo edit <账号>/<plugin> --visibility public --accept-visibility-change-consequences`；转前扫历史——`git log --all --name-only --format=''` 查 `.env`/credential/密钥类文件名 + `git grep -E 'gho_|sk-|ghp_' HEAD` 查 token 模式（`.gitignore` 排除 `.env` 是第一道防线）
    - **打 topic**：`gh repo edit <账号>/<plugin> --add-topic dsh-plugin,deepseek-harness`（官方引导语要求 `dsh-plugin`，聚合发现页 github.com/topics/dsh-plugin）
    - **父仓闭环**：提交 submodule 指针更新（插件仓推送后指针必然落后，别漏）
 
-> 误署名的补救：历史短可用 `git filter-branch --env-filter` 改写 + force push（会改变全部 hash，其它 clone 要 reset，父仓指针要更新）；新提交前配好 repo-local 身份则根本不会发生。
-
-## 插件 README 模板
-
-README 面向使用者（将来仓库访客），保持简单，固定六段：
-
-1. **一句话作用** — 解决什么问题
-2. **环境要求** — 验证过的 DSH 版本、平台限制
-3. **用法** — 使用者要放的文件 / 格式
-4. **安装** — 最短路径：build → patch 行 → 重启
-5. **配置** — patch `config` 字段表；无则写"无"
-6. **验证** — 一条命令确认生效
-
-原理、设计取舍、踩坑**不进 README**——放插件仓库自己的 `docs/design/`（见下节），README 留一行链接，避免两处重复维护漂移（本仓已有一次教训）。
-
-## 插件设计文档
-
-每个插件仓库内固定结构：
+### 2.2 插件仓目录结构
 
 ```
-docs/design/overview.md        # 机制总览：目标/非目标、工作原理、边界与限制
-docs/design/decisions/         # ADR，一个决策一个文件：NNNN-<slug>.md
+plugins/dsh-xxx/
+├── package.json                # type: module + dsh.bundle 声明（见 §2.4）；prepare 脚本自包含构建，产出 lib/
+├── tsconfig.json               # module: Node16, outDir: lib, rootDir: src
+├── src/index.ts                # TypeScript 源码
+├── lib/                        # 编译产物（gitignore）
+├── test-*.mjs                  # 纯函数单元测试（node 直接跑，不依赖 Cordis 环境）
+├── README.md                   # 面向使用者，固定六段：一句话作用 / 环境要求 / 用法 / 安装 / 配置 / 验证
+├── docs/design/overview.md     # 机制总览：目标/非目标、工作原理、边界与限制（单文件一页讲完，不拆多文件）
+├── docs/design/decisions/      # ADR，一个决策一个文件：NNNN-<slug>.md
+├── node_modules/@deepseek-ai/  # junction → DSH 安装的包（初始化见 §2.3 步骤 2）
+└── .temp/                      # 临时文件与过程性材料（实验脚本、本地笔记、一次性探针），列入插件自己的 .gitignore
 ```
 
-- **overview.md 单文件**：插件规模小，一页讲完，不拆多文件
+- **README 不写原理**：原理、设计取舍、踩坑一律放插件仓 `docs/design/`，README 文末留一行链接指向自己的 `docs/design/overview.md`，避免两处重复维护漂移（本仓已有一次教训）
 - **ADR 轻量五段**：状态（accepted/superseded）、背景、备选、决策、后果。只记真正的分叉决策（有备选可比、纠结过的）；小设计点写进 overview
-- **分层原则**：插件特定设计 → 插件仓库 `docs/design/`；跨插件方法论（HMR 缓存、patch 限制、开发流程）→ 合集 `docs/development-guide/` 与 `docs/official-usage/` 文章
-- 插件 README 文末链接指向自己的 `docs/design/overview.md`
+- **分层原则**：插件特定设计 → 插件仓库 `docs/design/`；跨插件方法论 → 合集 `docs/official-usage/` 文章
+- `.temp/` 不入库，公开文档不引用其路径
+- **插件配置要在设置页可编辑**：注册 `settings.section` / `settings.plugins.tab` 贡献；机制与示例见官方包 `dsh-client-ui-settings*` 系列的 README（DSH 安装树内，`cordis_inspect_query` 可定位包目录）
+- **client 交互组件直用官方组件库，不自绘**：bundle 形态的 client 半部直接 `require('@deepseek-ai/dsh-client-ui-primitives')`（平台基线外部：Menu/Switch/Button 等，CSS 随 shell）；创造模式纯 JS 动态插件禁用。布局骨架 CSS 从官方源码（fork submodule）复制、class 加插件前缀、只留 `--dsw-*` token；ErrorBoundary 必须包住官方组件。完整姿势见 [docs/official-usage/client-ui-primitives.md](docs/official-usage/client-ui-primitives.md)
 
-## DSH 插件开发
+### 2.3 开发流程
 
-**开发方法论、HMR 缓存行为、patch 系统限制等详见 [docs/development-guide/dsh-plugin-development.md](docs/development-guide/dsh-plugin-development.md)**（完整展开；`AGENTS.local.md` 只留浓缩铁律）。**插件配置要在设置页可编辑（GUI 卡片）用 [docs/development-guide/dsh-plugin-settings-page.md](docs/development-guide/dsh-plugin-settings-page.md)**（双半部 bundle：宿主 `installSettingsSection` + 客户端 keyed slot 卡片）。写新插件先找同类参考实现：host-only 模型工具看 `plugins/dsh-schedspawn`，设置页卡片双半部看 `plugins/dsh-archive-retention`，自绘面板双半部参考已退役的 dsh-workspace-files（2026-09-11 起被官方 0.1.5 内置侧栏取代、已从 `plugins/` 移除，源码仍在 [github.com/Momojie-S/dsh-workspace-files](https://github.com/Momojie-S/dsh-workspace-files)）。核心要点：
+按序六步，前一步不过不进下一步：
 
-- DSH 源码与文档：[github.com/deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，开发时**先读官方文档**（`docs/user/develop/`）；本机 checkout 路径等个人环境信息见 `AGENTS.local.md`
-- 插件用 TypeScript function 形式：`export const name` + `export function apply(ctx, config)`
-- 迭代流程：思路在创造模式（cordis 预设）动态验证，改静态代码后**重启 DSH** 验证（Node ESM 缓存限制，详见开发指南"HMR 与缓存"节）
-- **单插件失败会阻断整个 DSH 启动**（bundle 层无宽容路径）——改静态代码/新增插件后，重启前必须过开发指南「开发验证流程」的四道闸门（单测 → 原子构建 → 备用端口试启动 → 冒烟）；**闸门④冒烟必须真实打开浏览器过一遍 UI**——client 半部失败的报错文案与 host 侧一字不差而 curl 全绿，只测路由会漏判（2026-08-17 实测，浏览器验证缺位导致同一事故两次）；插件坏了起不来时用 bundle patch 行 `disabled: true` 灭火
-- **动态插件（创造模式）异常没有插件级隔离：任何未捕获抛错击穿整个 DSH 进程**——异步路径（事件回调/微任务）必须全链路 try/catch + `.catch()` 兜底，失败时退回原生行为；沙箱不暴露 `ctx.logger` 等宿主内置（Guard 只放行 `ctx.on` / `ctx.tools.register` / `ctx.provide` / timer / inject 声明的服务），可用符号先查 `Builtin.listBuiltins` 再用；注册成功 ≠ 安全——延迟路径的非法访问要到首次真实触发才炸（2026-08-25 实证：一行 `ctx.logger.info` 在运行一小时后杀死全进程）。细则见开发指南「用创造模式验证思路」节，复盘见 `docs/research/2026-08-25-subagent-settlement-delivery.md`
+1. **确认创造模式**：会话能看到官方 `cordis-plugin-development`、`cordis-composition-reference` 这几个 skill 才是创造模式（cordis 预设）；看不到就提醒用户切换预设，模式不对不动工。
+2. **依赖初始化**：新仓首次开发前，建 junction 指向 DSH 安装内的 `@deepseek-ai` 包，否则 `import '@deepseek-ai/xxx'` 解析不到（junction 与 DSH 运行时是同一份模块，无双实例问题）：
 
-## MCP 配置对标产品
+   ```powershell
+   $target = "<DSH 安装目录>\node_modules\@deepseek-ai\dsh\node_modules\@deepseek-ai"  # 安装目录可用 `where.exe dsh` 反查
+   New-Item -ItemType Directory -Force "$pluginDir\node_modules\@deepseek-ai"
+   cmd /c mklink /J "$pluginDir\node_modules\@deepseek-ai\cordis" "$target\cordis"
+   ```
 
-workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**（"业界怎么做"以它们为准，不凭空设计）。主对标三家（调研笔记见 README 文章索引）：
+3. **阅读官方 `cordis-plugin-development` skill**：插件写法的权威，DSH 安装自带、会话内自动可用；API 有疑问用 `cordis_inspect_query` 查运行时契约，不猜。
+4. **动态加载验证**：插件思路先在创造模式里动态加载验证（改完即热生效，不写静态代码）。注意动态插件抛出的异常会让整个 DSH 进程崩溃：异步路径全链路 try/catch + `.catch()` 兜底，失败退回原生行为；沙箱不暴露 `ctx.logger` 等宿主内置（可用符号先查 `Builtin.listBuiltins`）。
+5. **另起实例验证**：思路跑通后写成静态插件，构建后**另起一个 dsh web 实例（备用端口）试启动**，过四道闸门：单测 → 原子构建 → 备用端口试启动 → 冒烟。**闸门④冒烟必须真实打开浏览器过一遍 UI**——client 半部失败时 curl 检查全部通过、报错文案与 host 侧一字不差，只测路由会漏判；插件起不来时在 bundle patch 行加 `disabled: true` 应急停用（修好后再移除该行）。
+6. **真装载重启**：`dsh plugin --profile web add <插件目录>` 装进 profile，重启 DSH 后才是最终生效形态。
 
-- **Claude Code**（Anthropic）— 三作用域（local/project/user）+ 根级 `.mcp.json` 事实标准源头 + 项目文件批准门禁 + tool search
-- **Codex CLI**（OpenAI）— `.codex/config.toml` 项目级配置（与 `.dsh/` 点目录同型）+ 禁用开关/工具黑白名单/双超时一套规整字段
-- **OpenCode**（SST/Anomaly）— 分层合并配置（远程/全局/项目）+ `{env:}`/`{file:}` 变量替换 + MCP 按 agent 粒度启用
-
-扩展对标（按需查）：Gemini CLI（`.gemini/settings.json` + 环境脱敏）、Cursor / VS Code / Windsurf（编辑器阵营，`mcpServers` 变体）、Kiro / Amazon Q（企业 MCP Registry 治理）、Zed（`context_servers`，格式碎片化反例）。
-
-## 部署形态
+### 2.4 部署与安装
 
 双轨（同一命令族，只差来源）：
 
@@ -102,6 +90,10 @@ workspace-mcp 等 MCP 配置相关设计，**先对标成熟成品再定方案**
 
 **包名规范**：统一 `@momojie-s/<plugin-name>` scope（GitHub npm scope，将来发 npm 不占公共短名）。bundle patch 行、tarball 文件名（scope 连字符化：`momojie-s-<plugin>-x.y.z.tgz`）、profile 依赖键三处与包名保持一致。
 
-## 文章
+## 3. DSH 版本更新处理规范
 
-文章的索引、分类与写作规范**只在 README 的「使用心得笔记」维护**，本文件不重复列举（两处列表必然漂移，已发生过）。一条硬纪律：**`docs/research/` 只放 DSH 相关内容**——以 DSH 机制/问题/插件为主题的调研可入（含业界对照），纯第三方产品调研不入本目录。`docs/version/` 是计划任务自动生成的版本观察报告，不手工维护、不进索引。
+DSH 升级（`docs/version/` 出新版观察报告）后，对 `plugins/` 逐插件核对适配性，按序做三件事：
+
+1. **适配性核对**：以新版观察报告的「逐插件影响评估」节为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——报告只验证接面签名，查不出同 id 冲突，撞上会导致 DSH 启动失败）。
+2. **仍适配**：更新该插件 README「环境要求」的验证基准版本号——插件仓内提交并推送，父仓同步 submodule 指针（推送后指针必然落后，别漏）。
+3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md 的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive <账号>/<plugin>` 归档。
