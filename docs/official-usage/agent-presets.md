@@ -1,6 +1,6 @@
 # Agent Preset：是什么、有什么用、怎么用
 
-> 版本基准：`@deepseek-ai/dsh` **0.1.1-rc.2**（机制结论最初基于 rc.6 源码调研；rc.7 起 `enableRunInBackground` → `backgroundMode`（重套实践见文末），rc.8/0.1.1 preset 仅注释变化，`ptc-early-compact` 已验证至 0.1.1-rc.2 正常加载）。机制部分对照官方源码仓 `D:\code\workspace\deepseek-harness`（`packages/preset/agent-presets`、`packages/client/ui-agent-preset`、`packages/bundle/web-app/cordis.patch.yml`）。DSH 迭代快，升级后以官方包 README 为准更新本文。
+> 版本基准：`@deepseek-ai/dsh` **0.1.1-rc.2**（机制结论最初基于 rc.6 源码调研；rc.7 起 `enableRunInBackground` → `backgroundMode`（重套实践见文末），rc.8/0.1.1 preset 仅注释变化，`ptc-early-compact` 已验证至 0.1.1-rc.2 正常加载）。机制部分对照官方源码仓 [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)（`packages/preset/agent-presets`、`packages/client/ui-agent-preset`、`packages/bundle/web-app/cordis.patch.yml`）。DSH 迭代快，升级后以官方包 README 为准更新本文。
 
 **一句话**：preset 是一个目录，里面放一份 `agent.cordis.yml` 插件组装文件——它决定一个会话里的 agent 有哪些工具、什么人设、哪些行为参数。DSH 的底层是 Cordis 架构，每个能力都是 `cordis.yml` 里的一行插件；preset 就是"这一个会话贡献给注册表的那份组合文件"，建会话时挂载、随会话归属，进程内同一 preset 只挂载一份、所有用它的会话共享。
 
@@ -142,6 +142,7 @@ Web UI 里有四个表层（`dsh-client-ui-agent-preset`，已在本部署 web b
 ## 6. 踩坑与已知限制（rc.6）
 
 - **副本是会漂移的快照**：升级 DSH 会更新内置 preset，但**不会**更新你的副本；没有"standard 加一处改动"的 patch 语义（那是 bundle 层 `cordis.patch.yml` 的能力）。升级后若想要官方新能力，需重新复制再套自己的改动。**分清漂移的层次**：Code Mode（PTC）的引擎——`codeRuntime` 运行时与 SDK 生成——在宿主组合，升级后副本自动受益；会漂移的只是组装文件本身（行的增删、阈值、persona/文案）。跟进做法：在自己 preset 的文件头注释里维护一份"相对基线的改动清单"，升级时对照部署目录的内置 yml 重新 copy 再套改动（或让创造模式 agent 做对比合并）。
+- **persona 前后缀里的 `{{变量}}` 渲染时严格解析，注册表随版本变**（0.2.1-rc.2 实证）：`prefix`/`suffix` 模板在 prompt 渲染时逐个对照已注册的 prompt 变量，未知名直接抛错、该 preset 的会话挂载失败——`unknown prompt variable "{{cwd}}" in section "deployment:persona-suffix"; registered variables: provider, model`（校验点 `dsh-system-prompt/lib` 的 `interpolate`，变量注册点 `dsh-agent-loop/lib` 的 `ctx.systemPrompt.variable(...)`，该版只有 `provider`/`model` 两个）。0.1.5 官方升级指引曾推荐 `suffix: Your working directory is {{cwd}}.`，0.2.1-rc.2 区间（修复 `d6adc5d9`）起这个写法必炸：cwd 本就由必需运行时上下文持续提供（"Current working directory: ..."），删掉 suffix 即愈，官方 ptc 同版 persona 行也无 suffix。升级后 preset 报 unknown prompt variable，就去对照 agent-loop 注册点核对模板里的占位符。
 - **代际只以组装文件为键**：stamp 只看 `agent.cordis.yml` 的 mtime+大小——**改 skills/资产文件不会触发新一代**，要等组装文件本身变动（touch 一下）或进程重启才到达新会话。
 - **被替代的代际永不回收**：每轮"编辑后建会话"都会留一套活的常驻子树（含 skill-filesystem 的目录 watcher）直到进程结束。偶尔编辑无所谓，频繁改+开会话会攒 watcher。
 - **编辑中途的 preset 显示为"加载失败"**：名单的 broken 是形状检查（YAML 能否按加载器方言解析、是否为具名行列表），不是挂载校验；正在编辑的文件短暂 broken 是正常的。但 broken ≠ 能用——形状检查不证明每行的模块能解析激活，引用不存在的包要到第一个会话才失败（该会话创建回滚）。
@@ -158,5 +159,5 @@ Web UI 里有四个表层（`dsh-client-ui-agent-preset`，已在本部署 web b
 ## 相关文档
 
 - 官方包文档（机制权威）：源码仓 `packages/preset/agent-presets/README.zh.md`、`packages/client/ui-agent-preset/README.zh.md`
-- [dsh-plugin-development.md](../development-guide/dsh-plugin-development.md)——插件行级细节（function 形式、inject、副作用清理），preset 里的自定义行同套规则
+- 插件行级细节（function 形式、inject、副作用清理）以官方 `cordis-plugin-development` skill 为准（DSH 安装自带），preset 里的自定义插件行同套规则
 - [mcp.md](./mcp.md)——MCP server 配置（宿主组合层的事，不进 preset）
