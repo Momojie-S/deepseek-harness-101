@@ -10,6 +10,7 @@
 
 - 不重写记忆逻辑：存储/出处机制/三层模型全留在 Python 侧，单一实现源
 - 不做工具描述的动态透传（`tools/list`）：工具面是 versioned API，手写定义可获得更好的描述质量（bili-operator 同款取舍）；代价是 Python 侧加工具要同步 `tools.ts`
+- 工具描述在 server.py docstring 移植的基础上按 momoyu-mem 开发规范指定的两篇原文（MCP 官方 Tools + Anthropic Writing effective tools）增强：补 when-to-use、返回结构、工具间接力（search→get）、删除不可逆提示、入档纪律；Python 侧描述保持原样，两侧语义需随 API 变更同步
 - 不做写路径审查门（记忆是内部数据，不外发；与 bili-operator 的发布场景不同）
 
 ## 工作原理

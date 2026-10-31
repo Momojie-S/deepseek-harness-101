@@ -1,10 +1,17 @@
 /**
  * The 12 momoyu-mem tools, hand-authored against the versioned Python
  * server API (MomoYu/tools/momoyu-mem/src/momoyu_mem/server.py). Every
- * execute() is one bridge `tools/call`; descriptions are ported verbatim
- * from the server's curated docstrings/Field metadata, prefixed with a
+ * execute() is one bridge `tools/call`; descriptions are ported from the
+ * server's curated docstrings/Field metadata, prefixed with a
  * memory-bank marker so the bare names stay self-explanatory to agents
- * that never saw the `mcp__momoyu-mem__` prefix era.
+ * that never saw the `mcp__momoyu-mem__` prefix era — then ENRICHED per
+ * the two sources momoyu-mem's development guide canonizes (MCP official
+ * Tools concepts + Anthropic "Writing effective tools for agents"):
+ * each description states what/when-to-use, the return shape, the
+ * hand-off to sibling tools (search → get), irreversibility of deletes,
+ * and the entry discipline (directly-stated facts only). Parameter
+ * descriptions stay the server's own. Keep the two sides semantically
+ * aligned when the Python API changes.
  *
  * Grouping (global vs workspace-only) happens in host/index.ts by NAME —
  * this module only defines the surface and exposes the catalog metadata
@@ -66,7 +73,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const personGet = defineTool({
     name: 'person_get',
-    description: `${PREFIX}读取一个人物的完整档案：front-matter（平台账号映射/昵称/亲密度/确认态）+ 事实清单（置顶在前，含出处 join）+ 最近来往流水（新→旧，事件含 type 字段）。回复平台用户前、或主人提到过往约定时的第一入口。人物不存在时返回 found=false，读取不创建档案。person_ref 支持裸 uuid 或 平台:账号。`,
+    description: `${PREFIX}读取一个人物的完整档案，一次取全：front-matter（平台账号映射/昵称/亲密度/确认态）+ 事实清单（置顶在前，每条含出处 join，可回查事件原文）+ 最近来往流水（新→旧）。回复平台用户前、或主人提到过往约定/「上次那个」时的第一入口——先查再答。人物不存在时返回 {"found": false}，读取不创建档案；不知道 person_ref（只记得昵称/平台账号/某句事实）时先用 person_search 定位。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       journal_limit: { type: 'integer', description: '返回最近流水的条数（≥1，默认 20）' },
@@ -78,7 +85,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const personSearch = defineTool({
     name: 'person_search',
-    description: `${PREFIX}跨人物模糊搜索：匹配昵称 / 平台账号 / 事实内容。返回命中人物列表（uuid、昵称、账号、亲密度、命中的事实）。`,
+    description: `${PREFIX}跨人物模糊搜索：匹配昵称 / 平台账号 / 事实内容。只知道对方昵称、平台 ID 或说过的一句话时用它找人；返回命中人物列表（uuid、昵称、账号、亲密度、命中的事实）。拿到 uuid 后用 person_get 取完整档案。`,
     parameters: {
       query: { type: 'string', required: true, description: '关键词，匹配昵称 / 平台账号 / 事实内容' },
       limit: { type: 'integer', description: '最多返回条数（≥1，默认 20）' },
@@ -90,7 +97,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const stats = defineTool({
     name: 'stats',
-    description: `${PREFIX}返回记忆库统计：人物数 / 事实总数 / 事件总数。`,
+    description: `${PREFIX}记忆库统计：返回 {"persons", "facts", "events"}（人物数/事实总数/事件总数）。记忆整理前后核对库规模、健康检查时用。`,
     parameters: {},
     output: jsonOutput,
     isConcurrencySafe: () => true,
@@ -99,7 +106,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const personUpdate = defineTool({
     name: 'person_update',
-    description: `${PREFIX}更新人物档案的头部字段，只修改显式给出的项。查无此人返回可行动的 not found 提示。`,
+    description: `${PREFIX}更新人物档案的头部字段（昵称/亲密度/确认态），只修改显式给出的项，不传的字段不动。查无此人返回可行动的 not found 提示（附下一步建议）。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       display_name: { type: 'string', description: '昵称' },
@@ -113,7 +120,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const personAccountBind = defineTool({
     name: 'person_account_bind',
-    description: `${PREFIX}给人物追加一个平台账号映射（同一个人在多个平台的账号绑到同一档案）。查无此人返回 not found。`,
+    description: `${PREFIX}给人物追加一个平台账号映射：同一个人在多个平台出现（如 B站和小红书是同一人）时，把各平台账号绑到同一档案，之后任一平台的 person_ref 都解析到这个人。查无此人返回 not found。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       platform: { type: 'string', required: true, description: '平台标识，如 bilibili / xhs' },
@@ -126,7 +133,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const profileAdd = defineTool({
     name: 'profile_add',
-    description: `${PREFIX}往人物档案卡追加一条事实（偏好/身份/雷点/约定等长期有效的信息），长期事实尽量带出处（source_event_id）。人物不存在时自动建档（未确认态）。返回 uuid 与事实 ID（F<序号>，人物内只增不复用）。修正已有事实用 profile_update。出处事件不存在时返回 {"error": …}，此时不建档不落盘。`,
+    description: `${PREFIX}往人物档案卡追加一条长期事实（偏好/身份/雷点/约定）。只收对方直接陈述的事实——推断、玩笑、台词、单次证据先记 event 流水，同类证据再出现一次才入档。人物不存在时自动建档（未确认态）。返回 uuid 与事实 ID（F<序号>，人物内只增不复用）。修正已有事实用 profile_update，不要重复 add。出处事件不存在时返回 {"error": …}，此时不建档不落盘。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       content: { type: 'string', required: true, description: '事实内容。时间写具体日期（如「2026-11 想买 keycap」），不用「最近/昨天」等相对词；私密信息（真实姓名/电话/住址/证件号）默认不记录' },
@@ -140,7 +147,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const profileUpdate = defineTool({
     name: 'profile_update',
-    description: `${PREFIX}按 fact_id 原地修改一条事实的内容，不产生新行；可同时全量替换出处（source_event_ids，逐个校验、全过才落盘）。fact_id 可从 person_get 返回的 facts 查得。出处校验失败时返回 {"error": …}，原事实保持不变。`,
+    description: `${PREFIX}按 fact_id 原地修改一条事实的内容，不产生新行（重复信息用这个修正，不要 profile_add 新条）；可同时全量替换出处（source_event_ids，逐个校验、全过才落盘）。fact_id 从 person_get 返回的 facts 查得。出处校验失败时返回 {"error": …}，原事实保持不变。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       fact_id: { type: 'string', required: true, description: FACT_ID },
@@ -154,7 +161,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const profileDelete = defineTool({
     name: 'profile_delete',
-    description: `${PREFIX}删除一条事实。`,
+    description: `${PREFIX}删除一条事实。永久删除、无回收站；只是内容写错了用 profile_update 修正，不要删了重加。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       fact_id: { type: 'string', required: true, description: FACT_ID },
@@ -166,7 +173,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const profilePin = defineTool({
     name: 'profile_pin',
-    description: `${PREFIX}置顶/取消置顶一条事实。置顶的事实在 person_get 返回中排最前，并受后续整理保护。`,
+    description: `${PREFIX}置顶/取消置顶一条事实。置顶的排在 person_get 返回最前，且日后记忆整理不可清理——关键事实（雷点、重要约定）的保护机制。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       fact_id: { type: 'string', required: true, description: FACT_ID },
@@ -179,7 +186,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const eventAppend = defineTool({
     name: 'event_append',
-    description: `${PREFIX}向人物来往流水追加一条事件（按事件所属月写入 journal-YYYY-MM.jsonl，回填旧事件落它自己的月份文件）。人物不存在时自动建档。返回 uuid 与事件 ID（E<序号>，人物内只增不复用）。转述镜像：从 A 处听到此人的事，把 A 的 person_ref 与 A 流水里的事件 ID 填进 source_person+source_event_id（成对）。type/direction/ts/source 非法时返回 {"error": "<原因与合法值>"}。`,
+    description: `${PREFIX}向人物来往流水追加一条事件——边聊边记的常态入口：每次互动后记下原文与真实互动时间（批量处理时 ts 补真实时间，不能全写成入库时刻）。事件按所属月份分文件存储，回填旧事件自动落它自己的月份。人物不存在时自动建档。返回 uuid 与事件 ID（E<序号>，人物内只增不复用）。转述镜像：从 A 处听到 B 的事，先对 A 记原文事件，再对 B 追加镜像事件（source_person + source_event_id 成对指向 A 的那条）。type/direction/ts/source 非法时返回 {"error": "<原因与合法值>"}。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       direction: { type: 'string', description: 'type=platform 时必填：in=对方说的 / out=莫莫说的；type=episode 时忽略本参数（落盘 null）' },
@@ -199,7 +206,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const eventUpdate = defineTool({
     name: 'event_update',
-    description: `${PREFIX}修改一条已有流水的内容或情感值，修改后的条目会带 updated 标记。event_id 可从 person_get 的 recent_events 查得。要修正时间/类型/渠道：delete 后重新 append（事件 ID 会变，必须重传原 ts/type/channel，否则时间戳退化为入库时刻、时间线错序）。`,
+    description: `${PREFIX}修改一条已有流水的内容或情感值（例外口，修改后条目带 updated 标记）。只改得了内容与情感；要修正时间/类型/渠道走 event_delete 后重新 event_append（事件 ID 会变，必须重传原 ts/type/channel，否则时间戳退化为入库时刻、时间线错序）。event_id 从 person_get 返回的 recent_events 查得。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       event_id: { type: 'string', required: true, description: EVENT_ID },
@@ -213,7 +220,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
 
   const eventDelete = defineTool({
     name: 'event_delete',
-    description: `${PREFIX}删除一条流水记录。要修正内容外的字段（时间/类型/渠道）：删除后重新 append，并重传原 ts/type/channel（否则时间戳退化为入库时刻、时间线错序）。`,
+    description: `${PREFIX}删除一条流水记录。永久删除、无回收站；要修正内容外的字段（时间/类型/渠道）：删除后重新 event_append 并重传原 ts/type/channel，否则时间戳退化为入库时刻、时间线错序。`,
     parameters: {
       person_ref: { type: 'string', required: true, description: PERSON_REF },
       event_id: { type: 'string', required: true, description: EVENT_ID },
