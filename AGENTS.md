@@ -8,6 +8,7 @@
 deepseek-harness-101/
 ├── plugins/                 # 插件合集：每个插件是独立 git 仓库（submodule），内部规范见 §2
 │   ├── dsh-xxx/             # 自研插件
+│   ├── private/             # 私有插件（本仓普通目录，非 submodule、不发布）：环境钉死本机，安装只走开发机方式
 │   └── third-party/         # 三方插件（他人仓库的 submodule）
 ├── docs/
 │   ├── official-usage/      # DSH 官方功能使用说明（活文档）

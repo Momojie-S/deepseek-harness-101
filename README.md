@@ -14,6 +14,16 @@
 | @momojie-s/dsh-subagent-idle-delivery | `plugins/dsh-subagent-idle-delivery` | 子 agent 完成通知/汇报的 hold-and-release 投递：父会话忙碌时扣留（不再混进下一步输入、不延长当前回合），完全空闲后作为新回合送达；带 maxHoldMs 放水阀 |
 | @momojie-s/dsh-wechat-pad | `plugins/dsh-wechat-pad` | 微信接入：自研 TS Pad 协议栈（进程内）+ 登录管理（设置页「微信」独立页扫码/登出/掉线自动重登）+ 消息桥（名单过滤后每个对话一个独立 DSH 会话，autopilot 模式答复自动回发微信）+ workspace 限定模型工具；本地开发阶段（private，未建远程仓） |
 
+## 私有插件
+
+个人使用、不发布的插件，存放在 `plugins/private/`（本仓普通目录，非 submodule、不建远程仓）。环境钉死本机路径，无 i18n，安装只走开发机方式（`dsh plugin --profile web add <目录>`）。
+
+| 插件 | 路径 | 作用 |
+|------|------|------|
+| @momojie-s/dsh-momoyu-mem | `plugins/private/dsh-momoyu-mem` | 莫莫的记忆：把 momoyu-mem MCP server（MomoYu/tools/momoyu-mem，Python stdio）桥接为原生工具全局注册（全 workspace 会话可用），支持逐工具「全局/仅 workspace」分组与设置页（记忆库目录/uv 路径/分组）；懒启动常驻子进程 + 崩溃自愈 |
+
+（`plugins/` 根下的 dsh-bili-operator、dsh-wechat-pad 同为私有未发布，是否迁入 `private/` 另行安排。）
+
 ## 第三方插件
 
 他人开发的插件，以 submodule 挂载到 `plugins/third-party/` 下，与自研插件分开存放。
@@ -30,10 +40,8 @@
 
 ## 使用心得笔记
 
-**开发指南**（活文档——指导当前开发，随实践保持最新），按读者分两个目录：docs/development-guide/（自研插件开发方法论）与 docs/official-usage/（DSH 官方功能的使用说明；自研插件各自的使用说明在插件仓 README）：
+**使用说明**（活文档——指导当前实践，随实践保持最新）：docs/official-usage/（DSH 官方功能的使用说明；自研插件各自的使用说明在插件仓 README）：
 
-- [docs/development-guide/dsh-plugin-development.md](./docs/development-guide/dsh-plugin-development.md) — DSH 插件开发指南（形态、依赖注入、HMR 缓存、patch 限制、防炸启动四道闸门、踩坑速查）
-- [docs/development-guide/dsh-plugin-settings-page.md](./docs/development-guide/dsh-plugin-settings-page.md) — 插件设置页卡片:让插件配置在 Web 界面可编辑——双半部结构、设置命名空间、keyed slot 注册、构建门禁与踩坑实录（0.1.1-rc.2 实装验证）
 - [docs/official-usage/agent-presets.md](./docs/official-usage/agent-presets.md) — `official` Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
 - [docs/official-usage/mcp.md](./docs/official-usage/mcp.md) — `official` 怎么在 DSH 添加 MCP server（官方 dsh-mcp-client：patch 配置 + 踩坑；自研 workspace-mcp 见插件仓 README）
 
