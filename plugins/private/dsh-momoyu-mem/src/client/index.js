@@ -136,15 +136,13 @@ function StatusCard() {
   return h('div', { className: 'mm-card' },
     h('div', { className: 'mm-row' },
       h('div', { className: 'mm-row-text' },
-        h('div', { className: 'mm-title' }, '服务状态'),
+        h('div', { className: 'mm-title' }, '库统计'),
         h('div', { className: 'mm-desc' }, libText),
       ),
       h('div', { className: 'mm-control-slot' },
         h(PrimitiveBoundary, null, h(Button, { variant: 'ghost', onClick: load, disabled: busy }, busy ? '查询中…' : '刷新')),
       )),
-    h('p', { className: 'mm-quiet' }, status && status.bridge && status.bridge.running
-      ? h('span', { className: 'mm-ok' }, `记忆服务运行中${status.bridge.pid ? `（pid ${status.bridge.pid}）` : ''}`)
-      : '记忆服务未运行——下次任意工具调用会自动拉起（懒启动），无需手动启动。'))
+    h('p', { className: 'mm-quiet' }, '记忆库在插件进程内直接读写，无外部服务。'))
 }
 
 // ------------------------------------------------------------------- form
@@ -161,7 +159,7 @@ function ConfigCard() {
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState('')
   const [reload, setReload] = useState(0)
-  const [presets, setPresets] = useState(null) // { workspaces, tools, bridge }
+  const [presets, setPresets] = useState(null) // { workspaces, tools }
 
   useEffect(() => {
     void fetch(`${API}/presets`)
@@ -236,24 +234,13 @@ function ConfigCard() {
   return h('div', { className: 'mm-card' },
     h('div', { className: 'mm-row' },
       h('div', { className: 'mm-row-text' },
-        h('div', { className: 'mm-title' }, '记忆库目录'),
-        h('div', { className: 'mm-desc' }, 'momoyu-mem 的 uv 工程目录（数据 data/ 在其内）；改动保存后重启记忆服务'),
+        h('div', { className: 'mm-title' }, '记忆库数据目录'),
+        h('div', { className: 'mm-desc' }, 'people/ 所在的数据目录；改动保存后即时生效'),
       ),
       h('div', { className: 'mm-control-slot' },
         h('input', {
           type: 'text', value: values.memoryDir || '', disabled: editLocked,
           onChange: (e) => set('memoryDir', e.target.value),
-          className: 'mm-input', style: { width: '280px' },
-        }))),
-    h('div', { className: 'mm-row' },
-      h('div', { className: 'mm-row-text' },
-        h('div', { className: 'mm-title' }, 'uv 可执行文件路径'),
-        h('div', { className: 'mm-desc' }, '用于启动记忆服务（uv --directory <记忆库目录> run momoyu-mem）'),
-      ),
-      h('div', { className: 'mm-control-slot' },
-        h('input', {
-          type: 'text', value: values.uvPath || '', disabled: editLocked,
-          onChange: (e) => set('uvPath', e.target.value),
           className: 'mm-input', style: { width: '280px' },
         }))),
     h('div', { className: 'mm-row' },

@@ -4,23 +4,23 @@
 
 ## 一句话作用
 
-把 momoyu-mem 记忆库（Python MCP stdio server，MomoYu/tools/momoyu-mem）桥接为原生 DSH 工具并全局注册——这台机器上任何 workspace 的会话都能查/记莫莫的记忆；工具可按「全局 / 仅 workspace」分组收窄，设置页可配记忆库目录、uv 路径与分组。
+莫莫的记忆库：12 个原生 DSH 工具，**存储逻辑在插件进程内实现**（TS，从 Python 版逐行为移植）——全局注册，这台机器上任何 workspace 的会话都能查/记莫莫的记忆；工具可按「全局 / 仅 workspace」分组收窄，设置页可配数据目录与分组。零外部依赖（无 Python、无子进程、无端口）。
 
 ## 环境要求
 
 - DSH `>= 0.2.0-rc.2`（已验证 0.2.1-rc.5）
-- uv + momoyu-mem 工程（默认 `D:\code\workspace\MomoYu\tools\momoyu-mem`，`uv sync` 过即可）；数据 `data/` 在工程内，不由本插件管理
-- 12 工具定义对应 momoyu-mem 的 versioned API（`src/momoyu_mem/server.py`）；Python 侧新增工具需同步 `src/host/tools.ts`
+- 记忆数据目录（默认 `D:\code\workspace\MomoYu\tools\momoyu-mem\data`，即 `people/` 所在处）；数据格式与 Python 时代完全兼容，存量档案直接可用
+- 12 工具定义对应记忆库的 versioned API；数据格式见 `tools/momoyu-mem/README.md`（存储布局与接口语义的正本）
 
 ## 用法
 
 安装后所有会话默认可见 12 个工具（`person_get` / `person_search` / `stats` / `person_update` / `person_account_bind` / `profile_add` / `profile_update` / `profile_delete` / `profile_pin` / `event_append` / `event_update` / `event_delete`，接口语义见 momoyu-mem README）。设置页「莫莫的记忆」：
 
-- **服务状态卡**：记忆服务进程（懒启动：首个工具调用自动拉起）+ 库统计（人物/事实/事件数）
+- **库统计卡**：人物/事实/事件数
 - **工具可见性**：逐工具选「全局」（所有会话）或「仅 workspace」（只在收窄目录创建的会话可见，创建时判定）；保存后全局组立即重注册，仅 workspace 组对新会话生效
-- **路径配置**：记忆库目录、uv 可执行文件路径；改动保存后记忆服务自动重连（旧进程终止、下次调用以新配置拉起）
+- **路径配置**：记忆库数据目录（`people/` 所在处）；改动保存即时生效
 
-记忆服务的进程模型：常驻单实例 + 崩溃自愈（进程死亡 → 在途调用报错 → 下次调用自动重启），无端口占用（stdio）。
+进程模型：存储读写全部在插件进程内同步完成（Node 单线程事件循环提供与 Python 时代 RLock 相同的串行保证），无子进程、无懒启动、无崩溃恢复面。
 
 ## 安装
 
@@ -38,15 +38,14 @@ dsh plugin --profile web add D:\code\workspace\deepseek-harness-101\plugins\priv
 
 | 字段 | 默认 | 说明 |
 |---|---|---|
-| 记忆库目录 | `D:\code\workspace\MomoYu\tools\momoyu-mem` | momoyu-mem 的 uv 工程目录，数据 `data/` 在其内 |
-| uv 可执行文件路径 | `D:\code\env\uv\uv.exe` | 启动命令为 `uv --directory <记忆库目录> run momoyu-mem` |
+| 记忆库数据目录 | `D:\code\workspace\MomoYu\tools\momoyu-mem\data` | `people/` 所在的数据目录 |
 | workspace 收窄目录 | `D:\code\workspace\MomoYu` | 「仅 workspace」组工具的可见范围；空 = 整组隐藏 |
 | 工具可见性 | 全部「全局」 | 12 个工具逐一选择分组 |
 
 ## 验证
 
-- `npm test`：单测（NDJSON 分帧 / JSON-RPC 分拣 / 路径归一）+ 真 server 集成（握手、只读调用、并发复用、崩溃自愈）
+- `npm test`：单元（ts 归一化各形态）+ 集成（自动建档、序号、pin 排序、校验顺序不留空档、ts 归一化与月路由、旧格式行兼容、出处 join 与悬空降级、镜像校验、ref 透传）——用例移植自 Python 版 selftest，行为契约一致
 - 构建含双闸门：host 入口可加载且有 `apply` 导出；client bundle 可被浏览器加载器消费
-- 安装后：设置页出现「莫莫的记忆」，状态卡显示真实库统计；任意 workspace 开新会话可见 `person_get` 等工具
+- 安装后：设置页出现「莫莫的记忆」，库统计显示真实数据；任意 workspace 开新会话可见 `person_get` 等工具
 
 原理、边界与设计取舍见 [docs/design/overview.md](docs/design/overview.md)。

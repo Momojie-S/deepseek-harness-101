@@ -22,7 +22,7 @@
 import { defineTool, type ToolDefinition } from '@deepseek-ai/dsh-tools'
 import type { JsonValue } from '@deepseek-ai/dsh-util-values'
 
-import type { McpStdioBridge } from './mcp-bridge.js'
+import { MomoyoError, type MemoryStore } from './store.js'
 
 /** One tool's catalog metadata — what the settings page needs to render
  *  the per-tool visibility selector. */
@@ -61,15 +61,30 @@ const jsonOutput = {
     [{ type: 'text', text: JSON.stringify(value, null, 2) }] as never,
 }
 
-export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
-  /** Strip undefined optionals; the server-side pydantic owns defaults. */
-  const call = (tool: string) => async (args: Record<string, unknown>): Promise<JsonValue> => {
-    const clean: Record<string, unknown> = {}
-    for (const [key, value] of Object.entries(args)) {
-      if (value !== undefined) clean[key] = value
+export function buildTools(store: () => MemoryStore): ToolDefinition[] {
+  /** Dispatch to the in-process store. MomoyoError (business rules) renders as
+   *  {"error": message} — the same contract the Python MCP era had. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const call = (fn: (s: MemoryStore, args: Record<string, any>) => unknown) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (args: Record<string, any>): Promise<JsonValue> => {
+      const clean: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(args)) {
+        if (value !== undefined) clean[key] = value
+      }
+      try {
+        return fn(store(), clean) as JsonValue
+      } catch (error) {
+        if (error instanceof MomoyoError) {
+          return { error: (error as Error).message } as never
+        }
+        throw error
+      }
     }
-    return bridge.call(tool, clean)
-  }
+
+  /** undefined → null (store methods distinguish null from undefined). */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const opt = <T,>(v: T | undefined): T | null => v === undefined ? null : (v as T)
 
   const personGet = defineTool({
     name: 'person_get',
@@ -80,7 +95,11 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => true,
-    execute: call('person_get'),
+    execute: call((s, a) => {
+      const full = s.personFull(String(a.person_ref), typeof a.journal_limit === 'number' ? a.journal_limit : 20)
+      if (full === null) return { found: false, person_ref: a.person_ref, profile: null, facts: [], recent_events: [] }
+      return { found: true, ...full }
+    }),
   })
 
   const personSearch = defineTool({
@@ -92,7 +111,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => true,
-    execute: call('person_search'),
+    execute: call((s, a) => s.personSearch(String(a.query), typeof a.limit === 'number' ? a.limit : 20)),
   })
 
   const stats = defineTool({
@@ -101,7 +120,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     parameters: {},
     output: jsonOutput,
     isConcurrencySafe: () => true,
-    execute: call('stats'),
+    execute: call((s) => s.stats()),
   })
 
   const personUpdate = defineTool({
@@ -115,7 +134,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('person_update'),
+    execute: call((s, a) => s.personUpdate(String(a.person_ref), opt(a.display_name as string | undefined), opt(typeof a.intimacy === 'number' ? a.intimacy : undefined), opt(typeof a.confirmed === 'boolean' ? a.confirmed : undefined))),
   })
 
   const personAccountBind = defineTool({
@@ -128,7 +147,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('person_account_bind'),
+    execute: call((s, a) => s.personAccountBind(String(a.person_ref), String(a.platform), String(a.account))),
   })
 
   const profileAdd = defineTool({
@@ -142,7 +161,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('profile_add'),
+    execute: call((s, a) => s.profileAdd(String(a.person_ref), String(a.content), a.pinned === true, opt(a.source_event_id as string | undefined))),
   })
 
   const profileUpdate = defineTool({
@@ -156,7 +175,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('profile_update'),
+    execute: call((s, a) => s.profileUpdate(String(a.person_ref), String(a.fact_id), String(a.content), Array.isArray(a.source_event_ids) ? a.source_event_ids as string[] : null)),
   })
 
   const profileDelete = defineTool({
@@ -168,7 +187,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('profile_delete'),
+    execute: call((s, a) => s.profileDelete(String(a.person_ref), String(a.fact_id))),
   })
 
   const profilePin = defineTool({
@@ -181,7 +200,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('profile_pin'),
+    execute: call((s, a) => s.profilePin(String(a.person_ref), String(a.fact_id), a.pinned === undefined ? true : a.pinned === true)),
   })
 
   const eventAppend = defineTool({
@@ -201,7 +220,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('event_append'),
+    execute: call((s, a) => s.eventAppend(a)),
   })
 
   const eventUpdate = defineTool({
@@ -215,7 +234,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('event_update'),
+    execute: call((s, a) => s.eventUpdate(String(a.person_ref), String(a.event_id), opt(a.content as string | undefined), opt(typeof a.sentiment === 'number' ? a.sentiment : undefined))),
   })
 
   const eventDelete = defineTool({
@@ -227,7 +246,7 @@ export function buildTools(bridge: McpStdioBridge): ToolDefinition[] {
     },
     output: jsonOutput,
     isConcurrencySafe: () => false,
-    execute: call('event_delete'),
+    execute: call((s, a) => s.eventDelete(String(a.person_ref), String(a.event_id))),
   })
 
   return [

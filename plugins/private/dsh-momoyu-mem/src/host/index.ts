@@ -1,9 +1,9 @@
 /**
  * Host half of dsh-momoyu-mem.
  *
- * Bridges the Python momoyu-mem MCP server (resident stdio subprocess,
- * see mcp-bridge.ts) into native DSH tools, split into two visibility
- * groups driven by volatile config:
+ * Everything is in-process: the file-backed MemoryStore (store.ts, ported
+ * from the Python original) backs the 12 native tools directly — no Python
+ * subprocess, no bridge. Visibility split driven by volatile config:
  *
  * - global group  — registered on the plugin context at apply time, plus
  *   a rebuild after every settings save; visible to every session.
@@ -12,8 +12,8 @@
  *   stays hidden). Creation-time decision only, like dsh-bili-operator.
  *
  * Browser routes under /api/plugin-momoyu-mem: `/config` (revision-guarded
- * read/write), `/presets` (workspace list + tool catalog + bridge status),
- * `/status` (live status + library stats through the bridge).
+ * read/write), `/presets` (workspace list + tool catalog), `/status`
+ * (library stats through the store).
  *
  * @module @momojie-s/dsh-momoyu-mem
  */
@@ -29,8 +29,9 @@ import type {} from '@deepseek-ai/dsh-working-directory'
 import type {} from '@deepseek-ai/dsh-workspace'
 import z from '@deepseek-ai/schemastery'
 
-import { McpStdioBridge, normalizePath } from './mcp-bridge.js'
+import { normalizePath } from './store.js'
 import { buildTools, TOOL_CATALOG } from './tools.js'
+import { MemoryStore } from './store.js'
 
 export const name = 'momoyu-mem'
 
@@ -45,10 +46,8 @@ export const inject = [
 
 /** Volatile config fields; settings-page edits apply live. */
 export interface Config {
-  /** Absolute path of the momoyu-mem uv project (data/ lives inside it). */
+  /** Data directory of the memory store (contains people/). */
   memoryDir: Volatile<string | undefined>
-  /** Absolute path of the uv executable that runs the server. */
-  uvPath: Volatile<string | undefined>
   /** Workspace the workspace-only tool group loads in; empty = hidden. */
   workspacePath: Volatile<string | undefined>
   /** Tool names visible ONLY inside the workspace group. */
@@ -56,8 +55,7 @@ export interface Config {
 }
 
 export const Config = z.object({
-  memoryDir: z.string().default('D:\\code\\workspace\\MomoYu\\tools\\momoyu-mem').volatile(),
-  uvPath: z.string().default('D:\\code\\env\\uv\\uv.exe').volatile(),
+  memoryDir: z.string().default('D:\\code\\workspace\\MomoYu\\tools\\momoyu-mem\\data').volatile(),
   workspacePath: z.string().default('D:\\code\\workspace\\MomoYu').volatile(),
   workspaceTools: z.array(z.string()).default([]).volatile(),
 })
@@ -65,7 +63,6 @@ export const Config = z.object({
 /** Live-config view resolved from the volatile schema fields. */
 export interface ResolvedConfig {
   memoryDir: string
-  uvPath: string
   workspacePath: string
   workspaceTools: string[]
 }
@@ -104,19 +101,16 @@ export function apply(ctx: Context, config: Config): void {
 
   const current = (): ResolvedConfig => ({
     memoryDir: config.memoryDir.get() ?? '',
-    uvPath: config.uvPath.get() ?? '',
     workspacePath: config.workspacePath.get() ?? '',
     workspaceTools: (config.workspaceTools.get() ?? []).filter((name) => knownNames.has(name)),
   })
 
-  const bridge = new McpStdioBridge({
-    resolveCommand: () => ({
-      command: current().uvPath,
-      args: ['--directory', current().memoryDir, 'run', 'momoyu-mem'],
-    }),
-  })
+  // MemoryStore is stateless (path only) — build per call so memoryDir edits
+  // apply without any reset dance. Synchronous file IO keeps the same
+  // serialization guarantees the Python RLock provided.
+  const store = (): MemoryStore => new MemoryStore(current().memoryDir)
 
-  const allTools = buildTools(bridge)
+  const allTools = buildTools(store)
   const toolByName = new Map(allTools.map((tool) => [tool.name, tool]))
 
   // ---- global group: plugin-context registration, rebuilt on save ----
@@ -166,8 +160,7 @@ export function apply(ctx: Context, config: Config): void {
     try { disposeGlobal?.() } catch { /* already disposed */ }
     for (const dispose of disposersByAgent.values()) dispose()
     disposersByAgent.clear()
-    bridge.dispose()
-  }, 'momoyu-mem: tools + bridge')
+  }, 'momoyu-mem: tools')
 
   // ---- settings entry lookup (ns shape varies by loader) ----
   const findSettingsEntry = (): { ns: string; revision: number; value: unknown } | { error: string } => {
@@ -206,7 +199,6 @@ export function apply(ctx: Context, config: Config): void {
       }
       void (async () => {
         try {
-          const before = current()
           const body = JSON.parse(await readBody(req)) as { values?: unknown; revision?: number }
           const entry = findSettingsEntry()
           if ('error' in entry) {
@@ -222,10 +214,7 @@ export function apply(ctx: Context, config: Config): void {
             return
           }
           await ctx.settings.replace(entry.ns, body.values as object, body.revision ?? entry.revision)
-          // apply live effects: restart the bridge when its command moved,
-          // rebuild the global group for the new visibility split
-          const after = current()
-          if (before.memoryDir !== after.memoryDir || before.uvPath !== after.uvPath) bridge.reset()
+          // apply live effects: rebuild the global group for the new split
           registerGlobalGroup()
           const fresh = findSettingsEntry()
           json(res, 200, {
@@ -240,7 +229,7 @@ export function apply(ctx: Context, config: Config): void {
   })
   ctx.effect(() => disposeConfig, 'momoyu-mem: config route')
 
-  // ---- /presets: dropdown + catalog + status data for the settings page ----
+  // ---- /presets: dropdown + catalog data for the settings page ----
   const disposePresets = ctx.webServer.register({
     kind: 'exact',
     path: `${BASE}/presets`,
@@ -250,7 +239,6 @@ export function apply(ctx: Context, config: Config): void {
         json(res, 200, {
           workspaces,
           tools: TOOL_CATALOG,
-          bridge: bridge.status(),
         })
       } catch (error) {
         json(res, 503, { error: (error as Error).message })
@@ -259,26 +247,19 @@ export function apply(ctx: Context, config: Config): void {
   })
   ctx.effect(() => disposePresets, 'momoyu-mem: presets route')
 
-  // ---- /status: live bridge status + library stats through the bridge ----
+  // ---- /status: library stats through the store ----
   const disposeStatus = ctx.webServer.register({
     kind: 'exact',
     path: `${BASE}/status`,
     handler: (_req: IncomingMessage, res: ServerResponse) => {
-      void (async () => {
-        let library: unknown = null
-        try {
-          library = await bridge.call('stats', {})
-        } catch (error) {
-          library = { error: (error as Error).message }
-        }
-        // snapshot AFTER the call: a lazy spawn during stats should show
-        // up as running, not as the pre-call "not running".
-        const status = bridge.status()
-        json(res, 200, { bridge: status, library })
-      })()
+      try {
+        json(res, 200, { library: store().stats() })
+      } catch (error) {
+        json(res, 503, { library: { error: (error as Error).message } })
+      }
     },
   })
   ctx.effect(() => disposeStatus, 'momoyu-mem: status route')
 
-  logger.info('momoyu-mem host half loaded (bridge + 12 tools)')
+  logger.info('momoyu-mem host half loaded (in-process store + 12 tools)')
 }
