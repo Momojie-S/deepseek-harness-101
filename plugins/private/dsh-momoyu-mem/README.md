@@ -8,7 +8,7 @@
 
 ## 环境要求
 
-- DSH `>= 0.2.0-rc.2`（已验证 0.2.1-rc.5）
+- DSH `>= 0.2.0-rc.2`（已验证 0.2.2-rc.1）
 - 记忆数据目录（默认 `D:\code\workspace\MomoYu\tools\momoyu-mem\data`，即 `people/` 所在处）；数据格式与 Python 时代完全兼容，存量档案直接可用
 - 12 工具定义对应记忆库的 versioned API；数据格式见 `tools/momoyu-mem/README.md`（存储布局与接口语义的正本）
 
