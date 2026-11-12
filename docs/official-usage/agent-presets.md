@@ -159,5 +159,5 @@ Web UI 里有四个表层（`dsh-client-ui-agent-preset`，已在本部署 web b
 ## 相关文档
 
 - 官方包文档（机制权威）：源码仓 `packages/preset/agent-presets/README.zh.md`、`packages/client/ui-agent-preset/README.zh.md`
-- 插件行级细节（function 形式、inject、副作用清理）以官方 `cordis-plugin-development` skill 为准（DSH 安装自带），preset 里的自定义插件行同套规则
+- 插件行级细节（function 形式、inject、副作用清理）以官方 `dsh-doc` skill 为准（DSH 安装自带；0.2.2-rc.2 起取代 `cordis-plugin-development`，内容在 `references/plugin-development.md` 等文件中），preset 里的自定义插件行同套规则
 - [mcp.md](./mcp.md)——MCP server 配置（宿主组合层的事，不进 preset）

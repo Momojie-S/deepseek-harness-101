@@ -63,7 +63,7 @@ plugins/dsh-xxx/
 
 按序六步，前一步不过不进下一步：
 
-1. **确认创造模式**：会话能看到官方 `cordis-plugin-development`、`cordis-composition-reference` 这几个 skill 才是创造模式（cordis 预设）；看不到就提醒用户切换预设，模式不对不动工。
+1. **确认创造模式**：会话能看到官方 `dsh-doc` skill 才是创造模式（cordis 预设；0.2.2-rc.2 起取代旧的 `cordis-plugin-development` 等四个 skill，旧名已从 skill 目录移除）；看不到就提醒用户切换预设，模式不对不动工。
 2. **依赖初始化**：新仓首次开发前，建 junction 指向 DSH 安装内的 `@deepseek-ai` 包，否则 `import '@deepseek-ai/xxx'` 解析不到（junction 与 DSH 运行时是同一份模块，无双实例问题）：
 
    ```powershell
@@ -72,7 +72,7 @@ plugins/dsh-xxx/
    cmd /c mklink /J "$pluginDir\node_modules\@deepseek-ai\cordis" "$target\cordis"
    ```
 
-3. **阅读官方 `cordis-plugin-development` skill**：插件写法的权威，DSH 安装自带、会话内自动可用；API 有疑问用 `cordis_inspect_query` 查运行时契约，不猜。
+3. **阅读官方 `dsh-doc` skill**：插件写法的权威，DSH 安装自带、会话内自动可用；旧 `cordis-plugin-development` 的流程与参考在其 `references/plugin-development.md` 等文件中按需读取。API 有疑问用 `cordis_inspect_query` 查运行时契约，不猜。
 4. **动态加载验证**：插件思路先在创造模式里动态加载验证（改完即热生效，不写静态代码）。注意动态插件抛出的异常会让整个 DSH 进程崩溃：异步路径全链路 try/catch + `.catch()` 兜底，失败退回原生行为；沙箱不暴露 `ctx.logger` 等宿主内置（可用符号先查 `Builtin.listBuiltins`）。
 5. **另起实例验证**：思路跑通后写成静态插件，构建后**另起一个 dsh web 实例（备用端口）试启动**，过四道闸门：单测 → 原子构建 → 备用端口试启动 → 冒烟。**闸门④冒烟必须真实打开浏览器过一遍 UI**——client 半部失败时 curl 检查全部通过、报错文案与 host 侧一字不差，只测路由会漏判；插件起不来时在 bundle patch 行加 `disabled: true` 应急停用（修好后再移除该行）。
 6. **真装载重启**：`dsh plugin --profile web add <插件目录>` 装进 profile，重启 DSH 后才是最终生效形态。

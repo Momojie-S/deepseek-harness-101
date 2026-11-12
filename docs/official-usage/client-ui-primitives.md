@@ -17,7 +17,7 @@
 | client 半部形态 | 能否 require 官方组件 |
 | --- | --- |
 | **bundle 形态**（`dsh plugin add` 装载，factory(require)，如全部 `plugins/dsh-*`） | ✅ 直接用 |
-| **创造模式动态插件**（纯 JS、无构建链） | ❌ 禁用——官方 `cordis-plugin-development` skill practices.md 明文禁止（无类型检查、API 变化无声碎、组件抛错白屏 slot） |
+| **创造模式动态插件**（纯 JS、无构建链） | ❌ 禁用——官方 `dsh-doc` skill 的 practices 参考（原 `cordis-plugin-development` practices.md，0.2.2-rc.2 起并入 dsh-doc）明文禁止（无类型检查、API 变化无声碎、组件抛错白屏 slot） |
 
 官方文档存在张力（practices.md 禁令面向纯 JS 动态插件；平台源码文档面向 Module Loader bundle），**按 lane 归属适用**：bundle 形态走本文的许可。
 
