@@ -13,8 +13,8 @@ deepseek-harness-101/
 ├── docs/
 │   ├── official-usage/      # DSH 官方功能使用说明（活文档）
 │   ├── research/            # 调研笔记（版本快照）：只放 DSH 相关内容（含业界对照），纯第三方产品调研不入
-│   └── version/             # 版本观察报告：计划任务自动生成，不手工维护、不进索引
-├── scripts/                 # docs/version/ 观察报告的生成脚本（计划任务调用）
+│   └── version/             # 版本观察报告：DSH 新版本发布后手动触发生成，不进索引
+├── scripts/                 # docs/version/ 观察报告的手动触发脚本
 ├── forks/deepseek-harness/  # DSH 官方仓 fork（submodule），读源码用
 ├── .dsh/                    # 项目级 DSH 配置：mcp.servers.yml、skills/（项目级 skill）等
 ├── .env                     # workspace 级环境变量（gitignore）

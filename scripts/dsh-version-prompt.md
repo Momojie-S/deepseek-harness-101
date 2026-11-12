@@ -1,6 +1,6 @@
 # DSH 新版本调查任务
 
-> 本文件是 `scripts/check-dsh-version.ps1` 的调查指令模板（占位符 `{{CURRENT_VERSION}}` / `{{TARGET_VERSION}}` 由脚本替换后落盘为 `.dsh/version-check/task-<目标版本>.md`，交给 `dsh --profile headless` 无人值守执行）。改本文件即改未来所有调查的行为。
+> 本文件是 `scripts/check-dsh-version.ps1` 的调查指令模板（占位符 `{{CURRENT_VERSION}}` / `{{TARGET_VERSION}}` 由脚本替换后落盘为 `.dsh/version-check/task-<目标版本>.md`，交给 `dsh --profile headless` 执行；脚本手动触发，无定时巡检）。改本文件即改未来所有调查的行为；人工调查时也把本文件当作方法与报告结构规范使用。
 
 ## 角色
 
@@ -9,7 +9,7 @@
 ## 输入（脚本已备好）
 
 - 工作目录：本仓（deepseek-harness-101，插件合集）
-- 官方源码仓：`D:\code\workspace\deepseek-harness`（脚本已 `git fetch origin master`；这是插件开发时的源码对照仓，docs/ 与 packages/ 是最权威的差异来源）
+- 官方源码：GitHub 仓库 `deepseek-ai/deepseek-harness`（本机无本地克隆，一律在线读；docs/ 与 packages/ 是最权威的差异来源）
 - 已安装 DSH：`D:\code\env\node-v24.13.1-win-x64\node_modules\@deepseek-ai\dsh`（version = {{CURRENT_VERSION}}）
 - npm / node：`D:\code\env\node-v24.13.1-win-x64\npm.cmd` / `node.exe`（绝对路径调用，别依赖 PATH）
 
@@ -20,17 +20,18 @@
      - `package.json`：依赖声明变化（哪些 `@deepseek-ai/*` 内部包被 bump、版本范围变化）——这是内部升级清单
      - 对每个被 bump 的内部包再 `npm pack <pkg>@<旧> <pkg>@<新>` 对比其产物
      - `config/`：agent presets 变化（模型预设、技能注入，直接影响日常使用）
-     - `lib/*.js`：打包产物，文件名带哈希，按内容找显著增删段（粗粒度即可，源码仓会补细节）
-2. **源码仓提交历史**（辅助定位，别指望它做主证据）
-   - 注意：本机源码仓是 **shallow clone（depth=1）**，`git log` 只有一个 commit——历史类方法（`log -S`、区间圈定）天然不可用，直接以 tarball 对比为主证据、源码仓当"当前状态快照"（grep 接面存在性/签名）用
-   - 若仓库已转为完整 clone：`git -C D:\code\workspace\deepseek-harness log -S'"version": "<版本号>"' -- package.json` 定位版本 bump commit，两版本 bump 之间即变更区间；找不到 bump commit（CI 发版未推送时会发生）就按 npm 发布时间圈定：`git log --since=<旧版发布时间> --until=<新版发布时间>`，并在报告"方法与局限"里写明
+     - `lib/*.js`：打包产物，文件名带哈希，按内容找显著增删段（粗粒度即可，GitHub 在线源码会补细节）
+2. **源码提交历史**（辅助定位，别指望它做主证据；本机无本地克隆，走 GitHub 在线）
+   - 区间圈定：`gh api "repos/deepseek-ai/deepseek-harness/commits?path=package.json&per_page=100"` 列出 package.json 的变更 commit，定位两版本各自的版本 bump commit，两 bump 之间即变更区间；找不到 bump commit（CI 发版未推送时会发生）就按 npm 发布时间圈定，并在报告"方法与局限"里写明
+   - 区间文件清单：`gh api "repos/deepseek-ai/deepseek-harness/compare/<旧bumpsha>...<新bumpsha>"` 的 `files` 字段（结果过大就 `--paginate` 翻页）
+   - 单文件按版本在线读：`https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/<sha|tag|master>/<path>`；确需批量 grep 才临时浅克隆到 `$env:TEMP`（`git clone --filter=blob:none https://github.com/deepseek-ai/deepseek-harness`），用完即删
    - 重点看这段区间里 `docs/` 的变化（用户文档最诚实）与 `packages/` 涉及哪些包
 3. **插件影响分析（本任务的重点，篇幅应最大）**
-   - 逐个读 `plugins/*/src/index.ts`（现有 dsh-workspace-mcp / dsh-workspace-env / dsh-subagent-model，以目录实际内容为准），提取它触碰的全部 DSH 接面：
+   - 先枚举插件清单再逐个读 `plugins/*/src/index.ts`：自研插件用 `plugins/*/package.json` 枚举，三方插件用 `plugins/third-party/*/package.json` 枚举——**以枚举结果为准，不要按下面时点名单硬套**（2026-10-20 时点自研 7 个：dsh-workspace-mcp / dsh-workspace-env / dsh-schedspawn / dsh-subagent-idle-delivery / dsh-subagent-cleanup / dsh-archive-retention / dsh-wechat-pad；另有三方插件）。提取每个插件触碰的全部 DSH 接面：
      - `inject` 声明的服务名、`ctx.get(...)` 调用、监听/触发的事件名
      - 包装或调用的方法（**含 private 非契约方法**）、注册的工具名、config schema、peer 依赖版本
-   - 对每个接口在新版（源码仓 packages/ 或解包产物）里验证：还存在吗？签名变了吗？语义变了吗？
-   - 已知脆弱点（历史上最先断的地方）：dsh-workspace-env 包装的 `ctx.shell.spawnSpec` 是 private 方法；dsh-subagent-model fork 自官方 tool-subagent，官方重构会传导
+   - 对每个接口在新版（GitHub 在线 packages/ 或解包产物）里验证：还存在吗？签名变了吗？语义变了吗？
+   - 已知脆弱点（历史上最先断的地方）：dsh-workspace-env 包装的 `ctx.shell.spawnSpec` 是 private 方法；fork/包装官方工具的插件同理（曾有的 dsh-subagent-model fork 自官方 tool-subagent，已退役出仓，新插件若走 fork 路线同样是最先断的位置）
    - 每个插件结论三选一，附依据与预估改动量：**无需改动 / 需要改动（改什么）/ 建议废弃（官方已有原生替代）**
 4. **写报告**：`docs/version/{{TARGET_VERSION}}.md`（已存在且非空则读后增补，不整篇覆盖）
 

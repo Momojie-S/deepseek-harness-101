@@ -1,17 +1,22 @@
-# Daily DSH version check (scheduled task \dsh-version-check, 01:00 every day).
+# Manual DSH version check (run by hand when a new version shows up; the old
+# daily scheduled task \dsh-version-check was retired on 2026-10-30).
 #
 # Flow:
 #   1. Compare installed @deepseek-ai/dsh version vs npm dist-tags.latest
+#      (override both via -CurrentVersion / -TargetVersion, e.g. to backfill a
+#      report for a version the machine already installed:
+#      -CurrentVersion 0.2.1-rc.5 -TargetVersion 0.2.2-rc.1)
 #   2. No new version  -> log one line, exit 0 (no model calls, no cost)
 #   3. New version     -> skip if docs/version/<ver>.md already exists;
-#      otherwise fetch the official source repo, render
-#      scripts/dsh-version-prompt.md into .dsh/version-check/task-<ver>.md,
+#      otherwise render scripts/dsh-version-prompt.md into
+#      .dsh/version-check/task-<ver>.md,
 #      and run one headless investigation agent (dsh --profile headless) that
 #      writes docs/version/<ver>.md.
-#
-# Manual rehearsal (simulate a new version without waiting for a release):
-#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check-dsh-version.ps1 \
-#     -CurrentVersion 0.1.0-rc.3 -TargetVersion 0.1.0-rc.6
+#      NOTE: headless credential resolution has been broken since 2026-10
+#      (MISSING_CREDENTIAL for zai-coding-cn etc.; web keeps working — see
+#      ops dsh.md 2026-10-30 entry). If the headless agent exits without
+#      writing the report, run the investigation manually following
+#      scripts/dsh-version-prompt.md.
 
 param(
   # Override the detected running version (rehearsal only).
@@ -27,7 +32,6 @@ $installedPkg = "D:\code\env\node-v24.13.1-win-x64\node_modules\@deepseek-ai\dsh
 $npmCmd      = "D:\code\env\node-v24.13.1-win-x64\npm.cmd"
 $nodeExe     = "D:\code\env\node-v24.13.1-win-x64\node.exe"
 $dshBin      = "D:\code\env\node-v24.13.1-win-x64\node_modules\@deepseek-ai\dsh\lib\bin.js"
-$srcRepo     = "D:\code\workspace\deepseek-harness"
 
 $stateDir = Join-Path $workspace ".dsh\version-check"
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
@@ -37,9 +41,9 @@ function Log([string] $m) {
   Write-Host $m
 }
 
-# The scheduled task inherits nothing from an interactive DSH session; strip any
-# stale session vars and pin the canonical home (credentials live in
-# ~/.dsh/.credentials.yaml, shared by every launch context).
+# A manual run inside an interactive DSH session leaks session vars into the
+# headless child; strip any stale session vars and pin the canonical home
+# (credentials live in ~/.dsh/.credentials.yaml, shared by every launch context).
 Remove-Item Env:DSH_SESSION_ID, Env:DSH_SESSION_JSONL, Env:DSH_SHELL, Env:DSH_WEB_URL -ErrorAction SilentlyContinue
 $env:DSH_HOME = "C:\Users\Administrator\.dsh"
 
@@ -60,12 +64,11 @@ $report = Join-Path $workspace "docs\version\$TargetVersion.md"
 if (Test-Path $report) { Log "report already exists: $report"; exit 0 }
 
 # --- 3. prepare inputs for the investigation ---------------------------------
-# Best-effort: the agent reads the source repo; fetch first so it sees fresh
-# commits even if its own network calls fail.
-git -C $srcRepo fetch origin master 2>&1 | ForEach-Object { Log "fetch: $_" }
+# No local source clone on this machine: the investigation agent reads GitHub
+# online and runs its own tarball diffs (see scripts/dsh-version-prompt.md).
 
 $templatePath = Join-Path $workspace "scripts\dsh-version-prompt.md"
-$template = Get-Content $templatePath -Raw
+$template = Get-Content $templatePath -Raw -Encoding UTF8
 $task = $template.Replace("{{CURRENT_VERSION}}", $CurrentVersion).Replace("{{TARGET_VERSION}}", $TargetVersion)
 $taskPath = Join-Path $stateDir "task-$TargetVersion.md"
 Set-Content -Path $taskPath -Value $task -Encoding UTF8
