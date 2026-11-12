@@ -62,12 +62,11 @@
 - [docs/research/2026-08-23-context-compaction.md](./docs/research/2026-08-23-context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
 - [docs/research/2026-08-22-long-session-attention-degradation.md](./docs/research/2026-08-22-long-session-attention-degradation.md) — goal 长会话注意力退化调研：Context Rot / lost-in-the-middle / 轨迹锁定 / 目标代理四机制、六种业界解法对照（Ralph / compaction / 外部评审等）、定时评审子agent 设计的六条落地建议（2026-08 快照）
 
-## 版本观察（手动触发）
+## 版本跟进
 
-DSH 出新版本时手动触发调查：脚本对比 npm 官方 `@deepseek-ai/dsh` 最新版与本机运行版，有新版则起一次 headless 调查任务，总结新旧版本差异并逐个评估本仓插件是否需要改动/废弃，中文报告存 [docs/version/](./docs/version/)（文件名 = 新版本号）。原先的每日定时巡检已于 2026-10-30 退役。
+DSH 新版本的探查与适配调研按《DSH 升级 SOP》执行（SOP 维护在本机运维正典，不在本仓）：探查脚本对比 npm 官方 `@deepseek-ai/dsh` 最新版与本机运行版，发现新版后由会话内 agent 按 SOP 做逐插件适配调研。原「版本观察报告」体系（`docs/version/` 目录 + headless 调查）已于 2026-11-12 退役，每日定时巡检更早（2026-10-30）。
 
-- 触发脚本：`scripts/check-dsh-version.ps1`（默认对比本机运行版 vs npm latest，报告已存在则跳过）；调查指令模板（改它即改未来调查行为）：`scripts/dsh-version-prompt.md`
-- 补做历史版本报告（本机已升级、默认对比会跳过时，显式指定新旧区间）：`pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/check-dsh-version.ps1 -CurrentVersion <旧版> -TargetVersion <新版>`
+- 探查脚本：`scripts/check-dsh-version.ps1`（无参运行 = 对比本机运行版 vs npm latest；显式传 `-CurrentVersion <旧版> -TargetVersion <新版>` 可对比任意两版）
 
 ## 使用
 

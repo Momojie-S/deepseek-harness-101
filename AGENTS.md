@@ -12,9 +12,8 @@ deepseek-harness-101/
 │   └── third-party/         # 三方插件（他人仓库的 submodule）
 ├── docs/
 │   ├── official-usage/      # DSH 官方功能使用说明（活文档）
-│   ├── research/            # 调研笔记（版本快照）：只放 DSH 相关内容（含业界对照），纯第三方产品调研不入
-│   └── version/             # 版本观察报告：DSH 新版本发布后手动触发生成，不进索引
-├── scripts/                 # docs/version/ 观察报告的手动触发脚本
+│   └── research/            # 调研笔记（版本快照）：只放 DSH 相关内容（含业界对照），纯第三方产品调研不入
+├── scripts/                 # DSH 版本探查脚本（升级 SOP 探查环节，手动触发）
 ├── forks/deepseek-harness/  # DSH 官方仓 fork（submodule），读源码用
 ├── .dsh/                    # 项目级 DSH 配置：mcp.servers.yml、skills/（项目级 skill）等
 ├── .env                     # workspace 级环境变量（gitignore）
@@ -100,8 +99,8 @@ plugins/dsh-xxx/
 
 ## 3. DSH 版本更新处理规范
 
-DSH 升级（`docs/version/` 出新版观察报告）后，对 `plugins/` 逐插件核对适配性，按序做三件事：
+DSH 新版本的探查与适配调研按《DSH 升级 SOP》执行（运维正典文档，路径见 AGENTS.local.md §2；不再产出 `docs/version/` 观察报告，该体系已退役）。调研完成后对 `plugins/` 逐插件收尾，按序做三件事：
 
-1. **适配性核对**：以新版观察报告的「逐插件影响评估」节为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——报告只验证接面签名，查不出同 id 冲突，撞上会导致 DSH 启动失败）。
+1. **适配性核对**：以 SOP 逐插件调研报告为起点，报告未覆盖的接面补做静态核对；能实测的跑一条功能探针（如 workspace-env 查 `.env` 是否注入、schedspawn 调 `list`、archive-retention 查 manifest 时间）。⚠️ 核对含一条易漏项：**官方是否新增了与本地插件同 id 的内置 entry**（0.1.5 的 workspace-files 教训——接面签名核对查不出同 id 冲突，撞上会导致 DSH 启动失败）。
 2. **仍适配**：更新该插件 README「环境要求」的验证基准版本号——插件仓内提交并推送，父仓同步 submodule 指针（推送后指针必然落后，别漏）。
 3. **不适配或退役**：从 `plugins/` 移除 submodule（`git submodule deinit` + `git rm`，删前逐文件核对插件仓本地与远端 HEAD 一致）；父仓 README 插件表、AGENTS.md 的引用面同步清理；GitHub 仓 README 顶部补废弃声明（原因 + 官方替代 + 迁移指引，样式见 dsh-subagent-model），然后 `gh repo archive <账号>/<plugin>` 归档。

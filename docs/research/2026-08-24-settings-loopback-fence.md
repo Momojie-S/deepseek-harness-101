@@ -46,5 +46,5 @@
 
 ## 观察点
 
-- 官方若放开非 loopback 设置面（配合 0.1.1 的凭据体系强化），本篇结论过期；版本值守报告（`docs/version/`）出现 `ui-settings`/`settings-mirror` 相关变更时复核
+- 官方若放开非 loopback 设置面（配合 0.1.1 的凭据体系强化），本篇结论过期；官方变更涉及 `ui-settings`/`settings-mirror` 时复核（原 `docs/version/` 版本值守通道已退役，改为升级调研时留意）
 - 错误文案改进（"in this browser" → 明示非 loopback）也算可能的后续信号
