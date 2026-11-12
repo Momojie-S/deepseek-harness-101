@@ -32,6 +32,7 @@
 | 插件 | 路径 | 作用 |
 |------|------|------|
 | [dsh-zcode-coding-plan](https://github.com/yuyang2230/dsh-zcode-coding-plan)（yuyang2230，收录 v0.3.0） | `plugins/third-party/dsh-zcode-coding-plan` | 把已订阅的 GLM Coding Plan 套餐额度接入 DSH：注册 `zcode_call`（经官方 ZCode CLI 派发编码任务，享 1.5 倍套餐额度，`--resume` 多轮续接）与 `zcode_quota`（查套餐余量+配额闸门）两个工具；依赖 ZCode 客户端与套餐 Key，用法见其仓 README |
+| [dsh-qqbot](https://github.com/tencent-connect/dsh-qqbot)（tencent-connect，收录 0.5.5） | `plugins/third-party/dsh-qqbot` | QQ 私聊和群聊里直接对话 DeepSeek Harness（腾讯 connect 官方，IM 长连接）；部署于云主机生产 profile（id `im-qqbot`，原 npm 依赖 `^0.5.2` 收编为 submodule） |
 
 ## Fork 定制
 
