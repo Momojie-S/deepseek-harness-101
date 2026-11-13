@@ -92,6 +92,7 @@ plugins/dsh-xxx/
 - **开发机**：`dsh plugin --profile web add <插件目录>`——profile 得到 `link:` 依赖 + bundle 层挂载，改代码 → 原子构建 → 重启验证。**本地安装的标准方式**，与生产同构（bundle 声明/patch/client 声明的问题发布前就能暴露）。
 - **其他电脑**：`dsh plugin --profile web add github:<账号>/<plugin>`（首次按 pnpm 提示在 profile 的 `pnpm-workspace.yaml` 加 `allowBuilds` 授权构建），或 `pnpm pack` tarball 免授权。
 - **例外**：patch 手写 `file:///` 绝对路径行**只适用于纯 host 半部插件的临时实验**（行级 HMR 改 config 方便）；带浏览器半部的插件**必须** bundle 方式——clientModules 按"条目名=包名"从 profile 解析包，`file:///` 名字解析不到，client bundle 永远 404（rc.6 源码 `packages/client/modules`）。2026-08-17 起 profile 内零 `file:///` 行，全部走 bundle。
+- **搬迁/删除已安装插件的目录，先切引用再动文件**：运行中的 DSH 对 link 目录持有文件监听，直接 `git rm`/`submodule deinit` 会踩半删残骸与断链 junction，子进程管理层连环崩溃且重启艰难。顺序：`dsh plugin --profile web add <新路径>` 覆盖 link → 确认 profile `package.json` 指向新路径 → 新路径构建出 `lib/` → 最后才删/移旧目录 → 重启验证。
 
 每个插件 `package.json` 带 `dsh.bundle` 声明 + 包内 `cordis.patch.yml`（行 `name` 用包名，模块解析走 node_modules），`prepare` 脚本自包含构建（git 安装后产出 `lib/`）。
 
