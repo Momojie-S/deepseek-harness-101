@@ -1,0 +1,3 @@
+- insert:
+    - id: bili-operator
+      name: '@momojie-s/dsh-bili-operator'

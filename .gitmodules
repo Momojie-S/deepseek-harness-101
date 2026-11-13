@@ -23,9 +23,6 @@
 [submodule "plugins/third-party/dsh-zcode-coding-plan"]
 	path = plugins/third-party/dsh-zcode-coding-plan
 	url = https://github.com/yuyang2230/dsh-zcode-coding-plan.git
-[submodule "plugins/dsh-bili-operator"]
-	path = plugins/dsh-bili-operator
-	url = https://github.com/Momojie-S/dsh-bili-operator.git
 [submodule "plugins/third-party/dsh-qqbot"]
 	path = plugins/third-party/dsh-qqbot
 	url = https://github.com/tencent-connect/dsh-qqbot.git
