@@ -46,6 +46,7 @@
 
 - [docs/official-usage/agent-presets.md](./docs/official-usage/agent-presets.md) — `official` Agent Preset 是什么/有什么用/怎么用：内置四模式对照、UI 表层、创建自定义 preset 的两条路径与生效模型（rc.6 源码调研）
 - [docs/official-usage/mcp.md](./docs/official-usage/mcp.md) — `official` 怎么在 DSH 添加 MCP server（官方 dsh-mcp-client：patch 配置 + 踩坑；自研 workspace-mcp 见插件仓 README）
+- [docs/official-usage/subagent-model-selection.md](./docs/official-usage/subagent-model-selection.md) — 子 agent 显式选模型路由的白名单机制：host 平面插件条目 `subagent-model-selection-settings` 的声明位置、白名单语义与配置示例（0.2.2-rc.1）
 
 **调研笔记**（`docs/research/`，版本快照——开头留版本基准，结论被新版本取代时归档，不追更）：
 
@@ -61,6 +62,8 @@
 - [docs/research/2026-08-16-mcp-config-across-agents.md](./docs/research/2026-08-16-mcp-config-across-agents.md) — 主流 coding agent（Claude Code/Codex/OpenCode 等）MCP 配置方式调研与 workspace-mcp 对标（2026-08 快照）
 - [docs/research/2026-08-23-context-compaction.md](./docs/research/2026-08-23-context-compaction.md) — 上下文压缩调研：DSH 五层防线与 compaction-basic 机制、Claude Code/Codex/OpenCode/Gemini CLI 等产品实现、GitHub 开源项目两流派、成本经济学与本机调参建议（rc.7 + 2026-08 快照）
 - [docs/research/2026-08-22-long-session-attention-degradation.md](./docs/research/2026-08-22-long-session-attention-degradation.md) — goal 长会话注意力退化调研：Context Rot / lost-in-the-middle / 轨迹锁定 / 目标代理四机制、六种业界解法对照（Ralph / compaction / 外部评审等）、定时评审子agent 设计的六条落地建议（2026-08 快照）
+- [docs/research/2026-11-09-zstd-allocation-error.md](./docs/research/2026-11-09-zstd-allocation-error.md) — 工具调用成批报「Allocation error : not enough memory」：libzstd 会话压缩撞上系统提交内存耗尽的定位、触发条件与缓解（0.2.2-rc.1）
+- [docs/research/2026-11-13-domain-slowness-investigation.md](./docs/research/2026-11-13-domain-slowness-investigation.md) — 域名访问「升级后变卡」调研：链路各层无升级回归，真凶是 1.3Mbps 公网出口瓶颈 × WebSocket 断连重连风暴叠加；含一次性冷载增量与缓解（0.2.2-rc.2）
 
 ## 版本跟进
 
