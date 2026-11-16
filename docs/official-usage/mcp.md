@@ -75,4 +75,4 @@ dsh web --dump-config 2>&1 | Select-String 'mcp-|not a group'
 
 ---
 
-项目级 `workspace-mcp` 插件（自研）移植了同一套 supervisor 且补齐了上述盲区（`Session not found` 自愈），与全局 MCP 的同名遮蔽规则、headless 挂载法等见插件仓 README 与其 docs/design/。
+项目级 `workspace-mcp` 插件（自研）移植了同一套 supervisor 且补齐了上述盲区（重启/会话失效类调用失败在**同一次调用内自动重试**，模型无感知），与全局 MCP 的同名遮蔽规则、headless 挂载法等见插件仓 README 与其 docs/design/。
