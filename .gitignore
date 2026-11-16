@@ -24,3 +24,7 @@ skills-external/
 
 # dsh workspace-env（本地凭据，绝不入库）
 .env
+
+# 机器本地临时目录（过程性脚本/探针；gh 工具本地状态）
+.temp/
+.local/
