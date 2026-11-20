@@ -24,7 +24,7 @@ v0.2 的 17 工具面镜像上游 MCP 的 curated 形态。两个压力让它不
 - **识别表**：comment post/reply、dm send、dynamic post 恒审；upload video、dm autoreply set 各受独立配置开关控制（默认开）。正文优先级 `text` > 位置参数 > `--file <path>`（读文件）；识别为写操作但正文提取不出 → fail-close 拦截。`--dry-run` 跳过审查（预览不发）。正文含 `<…>` 占位符（reply_with 未替换的典型症状）直接拦。
 - **审查覆盖实际扩大**：原 `bili_run` 直通通道的写操作不过审（ADR-0002 拍板的已知豁免）；统一入口后六类写操作全部过门。
 - **大输出落盘**：`out_file` 写完整结果返摘要；不落盘时 `max_chars`（默认 8000）截断保护。`schema` 这类 68KB 输出永不直接进上下文。
-- **skill**：改写自上游 bili-cli skill（MIT；结构与说明手法保留，调用形态改为 `bili(args=[...], text=...)`，agent 可见文本去 CLI 化——ADR-0004 判定标准延伸覆盖 skill），存放插件仓 `skills/bili-operator/`，host 启动与 agent 创建时 junction 到运营 workspace 的 `.agents/skills/`（单一真源；绝不写用户全局 skills 根；已存在条目不动）。上游 skill 更新时按同一套替换规则重套一遍，diff 可 review。
+- **skill**：改写自上游 bili-cli skill（MIT；结构与说明手法保留，调用形态改为 `bili(args=[...], text=...)`，agent 可见文本去 CLI 化——ADR-0004 判定标准延伸覆盖 skill），存放插件仓 `skills/bili-operator/`，host 启动与 agent 创建时 junction 到运营 workspace 的 `.agents/skills/`（单一真源；绝不写用户全局 skills 根；已存在条目不动）。上游 skill 更新时的重套替换规则见 [../maintenance.md](../maintenance.md)。
 - 演练章程、场景章程默认值、运营会话白名单（`bili_` 前缀 → `bili`）同步更新。用户已保存的旧自定义章程里可能仍引用旧工具名，升级后需自查。
 
 ## 后果
