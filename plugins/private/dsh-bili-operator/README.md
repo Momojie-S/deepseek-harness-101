@@ -8,7 +8,7 @@ DSH 插件：B站账号运营——在指定 workspace 提供单一 `bili` 工�
 
 ## 环境要求
 
-- DSH `>= 0.2.0-rc.2`（已验证至 `0.2.2-rc.1`）
+- DSH `>= 0.2.0-rc.2`（已验证至 `0.2.2-rc.5`）
 - [bili-cli](https://github.com/kukemc/bili-cli)（PyPI 包名 `bili-agent`）>= 1.3.0 已安装且可执行；`bili mcp serve` 不需要——插件直接逐次调用 CLI
 - B站登录凭据建议放在专用目录（凭据隔离，见 docs/design/overview.md）
 
