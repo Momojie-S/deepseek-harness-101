@@ -31,6 +31,6 @@ v0.2 的 17 工具面镜像上游 MCP 的 curated 形态。两个压力让它不
 
 - 常驻上下文从 17 份 schema 降到 1 份；命令知识按需经 skill 渐进披露。
 - agent 拼错参数的校验从「工具 schema 强类型」退化为「底层 invalid_argument + hint 自纠」，多一次往返；skill 教学质量变得关键。
-- 识别表与 CLI 参数布局可能漂移（上游改 flag）：未知 flag 一律 fail-close 并提示改用 `text`，错误形态安全；升级 CLI 时人工跑一遍单测核对。
+- 识别表与 CLI 参数布局可能漂移（上游改 flag）：未知 flag 一律 fail-close 并提示改用 `text`，错误形态安全；升级 CLI 时的核对流程与 skill 重套规则见 [../maintenance.md](../maintenance.md)。
 - `mcp`/`skills` 两个一级 root 继续拒绝；`asr` 按既有决策放行（配置类但用户明确要求支持）。
 - ADR-0002 的白名单方案正式退役，其 superseded 注记所述「直通不过审」形态被本 ADR 收窄。

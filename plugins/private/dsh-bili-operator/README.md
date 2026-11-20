@@ -95,4 +95,4 @@ dsh plugin --profile web add github:Momojie-S/dsh-bili-operator
 - 构建即含两道闸门：host 入口可加载且有 `apply` 导出；client bundle 可被浏览器加载器消费且有 `apply`/`inject` 导出
 - 安装后：侧边栏面板入口出现「B站运营」（电视图标），点开为工作台面板——「设置」tab 表单加载当前值，改配置保存后刷新页面值仍在；`GET /api/plugin-bili-operator/presets` 返回模型目录
 
-原理、边界与设计取舍见 [docs/design/overview.md](docs/design/overview.md)。
+原理、边界与设计取舍见 [docs/design/overview.md](docs/design/overview.md)；与上游 bili-cli 的对齐维护（CLI 升级 / 识别表核对 / skill 重套规则）见 [docs/design/maintenance.md](docs/design/maintenance.md)。
